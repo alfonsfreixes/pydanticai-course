@@ -1,0 +1,894 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PydanticAI Cheat Sheet - Módulo 0 &#8212; Curso PydanticAI desde cero</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '00-introduccion/CheatSheet';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Notebook de introducción" href="notebook_intro.html" />
+    <link rel="prev" title="Módulo 0 · Introducción a PydanticAI" href="README.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Curso PydanticAI desde cero - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Curso PydanticAI desde cero - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="README.html">Módulo 0 · Introducción a PydanticAI</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">PydanticAI Cheat Sheet - Módulo 0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebook_intro.html">Notebook de introducción</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../01-agentes-basicos/README.html">Módulo 1 · Agentes básicos</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../01-agentes-basicos/agentes_basicos.html">Agentes básicos con PydanticAI</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../02-contexto-y-validacion/README.html">Módulo 2 · Contexto y validación</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../02-contexto-y-validacion/validacion.html">Validación y contexto</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../03-integracion-con-llms/README.html">Módulo 3 · Integración con LLMs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../03-integracion-con-llms/integracion_llms.html">Integración con modelos LLM</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/00-introduccion/CheatSheet.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>PydanticAI Cheat Sheet - Módulo 0</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instalacion-rapida">🚀 Instalación rápida</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurar-api-keys">🔑 Configurar API Keys</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#crear-agentes">🤖 Crear Agentes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agente-basico">Agente básico</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#con-instrucciones">Con instrucciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instrucciones-dinamicas">Instrucciones dinámicas</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelos-de-diferentes-proveedores">🎯 Modelos de diferentes proveedores</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#salidas-estructuradas">📊 Salidas estructuradas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-funciones">🛠️ Tools / Funciones</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-basica">Tool básica</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-con-parametros">Tool con parámetros</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-sin-contexto">Tool sin contexto</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modos-de-ejecucion">🔄 Modos de ejecución</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sincrono-simple">Síncrono (simple)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asincrono-mejor-performance">Asíncrono (mejor performance)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#streaming-tiempo-real">Streaming (tiempo real)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-injection">💉 Dependency Injection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#informacion-de-uso">📈 Información de uso</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuracion-del-modelo">🎨 Configuración del modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-con-logfire">🔍 Debugging con Logfire</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#patrones-comunes">✅ Patrones comunes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-1-extractor-de-datos">Pattern 1: Extractor de datos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-2-multi-tool-agent">Pattern 2: Multi-tool agent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-3-context-aware">Pattern 3: Context-aware</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#errores-comunes">🚨 Errores comunes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-no-api-key-found">Error: No API key found</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-python-version-too-old">Error: Python version too old</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-module-not-found">Error: Module not found</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recursos-rapidos">📚 Recursos rápidos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comandos-utiles">🎯 Comandos útiles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tips-rapidos">💡 Tips rápidos</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="pydanticai-cheat-sheet-modulo-0">
+<h1>PydanticAI Cheat Sheet - Módulo 0<a class="headerlink" href="#pydanticai-cheat-sheet-modulo-0" title="Link to this heading">#</a></h1>
+<p>Referencia rápida de los comandos y patrones más usados.</p>
+<hr class="docutils" />
+<section id="instalacion-rapida">
+<h2>🚀 Instalación rápida<a class="headerlink" href="#instalacion-rapida" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instalación completa</span>
+pip<span class="w"> </span>install<span class="w"> </span>pydantic-ai
+
+<span class="c1"># Solo OpenAI</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;pydantic-ai-slim[openai]&#39;</span>
+
+<span class="c1"># Solo Anthropic</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;pydantic-ai-slim[anthropic]&#39;</span>
+
+<span class="c1"># Verificar instalación</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pydantic_ai; print(pydantic_ai.__version__)&quot;</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="configurar-api-keys">
+<h2>🔑 Configurar API Keys<a class="headerlink" href="#configurar-api-keys" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># En terminal (Linux/Mac)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span><span class="s2">&quot;sk-...&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span><span class="s2">&quot;sk-ant-...&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_API_KEY</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
+
+<span class="c1"># En Windows PowerShell</span>
+<span class="nv">$env</span>:OPENAI_API_KEY<span class="o">=</span><span class="s2">&quot;sk-...&quot;</span>
+
+<span class="c1"># O crear archivo .env</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;OPENAI_API_KEY=&quot;sk-...&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>.env
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="crear-agentes">
+<h2>🤖 Crear Agentes<a class="headerlink" href="#crear-agentes" title="Link to this heading">#</a></h2>
+<section id="agente-basico">
+<h3>Agente básico<a class="headerlink" href="#agente-basico" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;openai:gpt-4o-mini&#39;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s1">&#39;¿Qué es Python?&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="con-instrucciones">
+<h3>Con instrucciones<a class="headerlink" href="#con-instrucciones" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="s1">&#39;openai:gpt-4o-mini&#39;</span><span class="p">,</span>
+    <span class="n">instructions</span><span class="o">=</span><span class="s1">&#39;Eres un experto en Python. Responde de forma concisa.&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="instrucciones-dinamicas">
+<h3>Instrucciones dinámicas<a class="headerlink" href="#instrucciones-dinamicas" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@agent</span><span class="o">.</span><span class="n">instructions</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_instructions</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;El usuario es </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="modelos-de-diferentes-proveedores">
+<h2>🎯 Modelos de diferentes proveedores<a class="headerlink" href="#modelos-de-diferentes-proveedores" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># OpenAI</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;openai:gpt-4o-mini&#39;</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;openai:gpt-4o&#39;</span><span class="p">)</span>
+
+<span class="c1"># Anthropic</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;anthropic:claude-sonnet-4-0&#39;</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;anthropic:claude-opus-4-0&#39;</span><span class="p">)</span>
+
+<span class="c1"># Google Gemini</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;google-gla:gemini-2.5-flash&#39;</span><span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;google-gla:gemini-2.5-pro&#39;</span><span class="p">)</span>
+
+<span class="c1"># Groq (rápido)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;groq:llama-3.3-70b-versatile&#39;</span><span class="p">)</span>
+
+<span class="c1"># Ollama (local)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;ollama:llama3.2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="salidas-estructuradas">
+<h2>📊 Salidas estructuradas<a class="headerlink" href="#salidas-estructuradas" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CityInfo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">country</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">population</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;openai:gpt-4o&#39;</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="n">CityInfo</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s1">&#39;Info sobre París&#39;</span><span class="p">)</span>
+<span class="n">city</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>  <span class="c1"># Tipo CityInfo validado</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="tools-funciones">
+<h2>🛠️ Tools / Funciones<a class="headerlink" href="#tools-funciones" title="Link to this heading">#</a></h2>
+<section id="tool-basica">
+<h3>Tool básica<a class="headerlink" href="#tool-basica" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_time</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Obtiene la hora actual.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="tool-con-parametros">
+<h3>Tool con parámetros<a class="headerlink" href="#tool-con-parametros" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sumar</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Suma dos números.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+</section>
+<section id="tool-sin-contexto">
+<h3>Tool sin contexto<a class="headerlink" href="#tool-sin-contexto" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@agent</span><span class="o">.</span><span class="n">tool_plain</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_pi</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retorna el valor de PI.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">3.14159</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="modos-de-ejecucion">
+<h2>🔄 Modos de ejecución<a class="headerlink" href="#modos-de-ejecucion" title="Link to this heading">#</a></h2>
+<section id="sincrono-simple">
+<h3>Síncrono (simple)<a class="headerlink" href="#sincrono-simple" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s1">&#39;prompt&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="asincrono-mejor-performance">
+<h3>Asíncrono (mejor performance)<a class="headerlink" href="#asincrono-mejor-performance" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s1">&#39;prompt&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="streaming-tiempo-real">
+<h3>Streaming (tiempo real)<a class="headerlink" href="#streaming-tiempo-real" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_stream</span><span class="p">(</span><span class="s1">&#39;prompt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">result</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">stream_text</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="dependency-injection">
+<h2>💉 Dependency Injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Deps</span><span class="p">:</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">Database</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;openai:gpt-4o-mini&#39;</span><span class="p">,</span> <span class="n">deps_type</span><span class="o">=</span><span class="n">Deps</span><span class="p">)</span>
+
+<span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user_data</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="n">Deps</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Obtiene datos del usuario.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span>
+
+<span class="c1"># Ejecutar con dependencias</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s1">&#39;query&#39;</span><span class="p">,</span> <span class="n">deps</span><span class="o">=</span><span class="n">Deps</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="informacion-de-uso">
+<h2>📈 Información de uso<a class="headerlink" href="#informacion-de-uso" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s1">&#39;prompt&#39;</span><span class="p">)</span>
+
+<span class="c1"># Tokens usados</span>
+<span class="n">usage</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">usage</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tokens entrada: </span><span class="si">{</span><span class="n">usage</span><span class="o">.</span><span class="n">request_tokens</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tokens salida: </span><span class="si">{</span><span class="n">usage</span><span class="o">.</span><span class="n">response_tokens</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total: </span><span class="si">{</span><span class="n">usage</span><span class="o">.</span><span class="n">total_tokens</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="configuracion-del-modelo">
+<h2>🎨 Configuración del modelo<a class="headerlink" href="#configuracion-del-modelo" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelSettings</span>
+
+<span class="n">settings</span> <span class="o">=</span> <span class="n">ModelSettings</span><span class="p">(</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span>
+<span class="p">)</span>
+
+<span class="c1"># En el agente</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;openai:gpt-4o&#39;</span><span class="p">,</span> <span class="n">model_settings</span><span class="o">=</span><span class="n">settings</span><span class="p">)</span>
+
+<span class="c1"># En runtime</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s1">&#39;prompt&#39;</span><span class="p">,</span> <span class="n">model_settings</span><span class="o">=</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="debugging-con-logfire">
+<h2>🔍 Debugging con Logfire<a class="headerlink" href="#debugging-con-logfire" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logfire</span>
+
+<span class="c1"># Configurar (primera vez)</span>
+<span class="c1"># logfire auth</span>
+
+<span class="c1"># En tu código</span>
+<span class="n">logfire</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+<span class="n">logfire</span><span class="o">.</span><span class="n">instrument_pydantic_ai</span><span class="p">()</span>
+
+<span class="c1"># Ahora todos los agentes son observables en:</span>
+<span class="c1"># https://logfire.pydantic.dev</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="patrones-comunes">
+<h2>✅ Patrones comunes<a class="headerlink" href="#patrones-comunes" title="Link to this heading">#</a></h2>
+<section id="pattern-1-extractor-de-datos">
+<h3>Pattern 1: Extractor de datos<a class="headerlink" href="#pattern-1-extractor-de-datos" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Data</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s1">&#39;openai:gpt-4o&#39;</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="n">Data</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s2">&quot;Apple vale $180&quot;</span><span class="p">)</span>
+<span class="c1"># result.output.name == &quot;Apple&quot;</span>
+<span class="c1"># result.output.value == 180.0</span>
+</pre></div>
+</div>
+</section>
+<section id="pattern-2-multi-tool-agent">
+<h3>Pattern 2: Multi-tool agent<a class="headerlink" href="#pattern-2-multi-tool-agent" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tool_a</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tool_b</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tool_c</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="c1"># El modelo decide cuál usar</span>
+</pre></div>
+</div>
+</section>
+<section id="pattern-3-context-aware">
+<h3>Pattern 3: Context-aware<a class="headerlink" href="#pattern-3-context-aware" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@agent</span><span class="o">.</span><span class="n">instructions</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">instructions</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Usuario: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, nivel: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="s1">&#39;query&#39;</span><span class="p">,</span> <span class="n">deps</span><span class="o">=</span><span class="n">current_user</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="errores-comunes">
+<h2>🚨 Errores comunes<a class="headerlink" href="#errores-comunes" title="Link to this heading">#</a></h2>
+<section id="error-no-api-key-found">
+<h3>Error: No API key found<a class="headerlink" href="#error-no-api-key-found" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solución</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span><span class="s2">&quot;tu-key&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="error-python-version-too-old">
+<h3>Error: Python version too old<a class="headerlink" href="#error-python-version-too-old" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solución: actualizar a Python 3.10+</span>
+pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.12
+pyenv<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="m">3</span>.12
+</pre></div>
+</div>
+</section>
+<section id="error-module-not-found">
+<h3>Error: Module not found<a class="headerlink" href="#error-module-not-found" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solución: instalar dependencias</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;pydantic-ai-slim[openai]&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="recursos-rapidos">
+<h2>📚 Recursos rápidos<a class="headerlink" href="#recursos-rapidos" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Docs</strong>: <a class="reference external" href="https://ai.pydantic.dev">https://ai.pydantic.dev</a></p></li>
+<li><p><strong>Ejemplos</strong>: <a class="reference external" href="https://ai.pydantic.dev/examples/">https://ai.pydantic.dev/examples/</a></p></li>
+<li><p><strong>API Ref</strong>: <a class="reference external" href="https://ai.pydantic.dev/api/agent/">https://ai.pydantic.dev/api/agent/</a></p></li>
+<li><p><strong>GitHub</strong>: <a class="github reference external" href="https://github.com/pydantic/pydantic-ai">pydantic/pydantic-ai</a></p></li>
+<li><p><strong>Slack</strong>: <a class="reference external" href="https://logfire.pydantic.dev/docs/join-slack/">https://logfire.pydantic.dev/docs/join-slack/</a></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="comandos-utiles">
+<h2>🎯 Comandos útiles<a class="headerlink" href="#comandos-utiles" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ejecutar ejemplos</span>
+python<span class="w"> </span>ejemplos_basicos.py
+
+<span class="c1"># Verificar setup</span>
+python<span class="w"> </span>verificar_setup.py
+
+<span class="c1"># Jupyter notebook</span>
+jupyter<span class="w"> </span>notebook<span class="w"> </span>notebook_intro.ipynb
+
+<span class="c1"># Ver tokens usados</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from pydantic_ai import Agent; a=Agent(&#39;openai:gpt-4o-mini&#39;); r=a.run_sync(&#39;hola&#39;); print(r.usage())&quot;</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="tips-rapidos">
+<h2>💡 Tips rápidos<a class="headerlink" href="#tips-rapidos" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Empieza simple</strong>: Un agente básico primero</p></li>
+<li><p><strong>Valida siempre</strong>: Usa Pydantic models para outputs</p></li>
+<li><p><strong>Type hints</strong>: TypeScript para Python, úsalos</p></li>
+<li><p><strong>Logfire early</strong>: Configúralo desde el principio</p></li>
+<li><p><strong>Async cuando puedas</strong>: Mejor performance</p></li>
+<li><p><strong>Tools pequeñas</strong>: Una función, una responsabilidad</p></li>
+<li><p><strong>Tests con mocks</strong>: Usa TestModel para testing</p></li>
+<li><p><strong>Deps inyectadas</strong>: Mejor que variables globales</p></li>
+<li><p><strong>Streaming UX</strong>: Para mejor experiencia de usuario</p></li>
+<li><p><strong>Cost tracking</strong>: Monitorea tokens desde el día 1</p></li>
+</ol>
+<hr class="docutils" />
+<p><strong>¡Esto es todo lo que necesitas para empezar! 🚀</strong></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./00-introduccion"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="README.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Módulo 0 · Introducción a PydanticAI</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="notebook_intro.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Notebook de introducción</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instalacion-rapida">🚀 Instalación rápida</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurar-api-keys">🔑 Configurar API Keys</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#crear-agentes">🤖 Crear Agentes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agente-basico">Agente básico</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#con-instrucciones">Con instrucciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instrucciones-dinamicas">Instrucciones dinámicas</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelos-de-diferentes-proveedores">🎯 Modelos de diferentes proveedores</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#salidas-estructuradas">📊 Salidas estructuradas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-funciones">🛠️ Tools / Funciones</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-basica">Tool básica</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-con-parametros">Tool con parámetros</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-sin-contexto">Tool sin contexto</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modos-de-ejecucion">🔄 Modos de ejecución</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sincrono-simple">Síncrono (simple)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asincrono-mejor-performance">Asíncrono (mejor performance)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#streaming-tiempo-real">Streaming (tiempo real)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-injection">💉 Dependency Injection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#informacion-de-uso">📈 Información de uso</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuracion-del-modelo">🎨 Configuración del modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-con-logfire">🔍 Debugging con Logfire</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#patrones-comunes">✅ Patrones comunes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-1-extractor-de-datos">Pattern 1: Extractor de datos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-2-multi-tool-agent">Pattern 2: Multi-tool agent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-3-context-aware">Pattern 3: Context-aware</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#errores-comunes">🚨 Errores comunes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-no-api-key-found">Error: No API key found</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-python-version-too-old">Error: Python version too old</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-module-not-found">Error: Module not found</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recursos-rapidos">📚 Recursos rápidos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comandos-utiles">🎯 Comandos útiles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tips-rapidos">💡 Tips rápidos</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alfons Freixes
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
