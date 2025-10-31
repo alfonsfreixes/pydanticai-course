@@ -4,9 +4,13 @@ on:
   push:
     branches: [ main ]
 
+# 👇 Permisos necesarios para poder pushear a gh-pages
+permissions:
+  contents: write
+
 jobs:
   build-deploy:
-    runs-on: ubuntu-latest   # <- Runner en la nube, no tu PC
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
