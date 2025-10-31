@@ -1,0 +1,29 @@
+name: Deploy JupyterBook
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest   # <- Runner en la nube, no tu PC
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install -U jupyter-book
+
+      - name: Build book
+        run: jupyter-book build .
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _build/html
+          publish_branch: gh-pages
+          force_orphan: true

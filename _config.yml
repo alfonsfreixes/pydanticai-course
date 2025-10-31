@@ -1,0 +1,6 @@
+title: "PydanticAI desde cero"
+author: "Alfons Freixes"
+logo: assets/logo.png
+execute:
+  execute_notebooks: "off"
+only_build_toc_files: true

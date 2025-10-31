@@ -1,0 +1,7 @@
+format: jb-book
+root: index
+chapters:
+  - file: 00-introduccion/README
+  - file: 01-agentes-basicos/README
+  - file: 02-contexto-y-validacion/README
+  - file: 03-integracion-con-llms/README
