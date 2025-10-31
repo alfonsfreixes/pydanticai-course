@@ -1,7 +1,7 @@
 title: "Curso PydanticAI desde cero"
 author: "Alfons Freixes"
 logo: assets/logo.png
-favicon: assets/logo.png
+favicon: assets/logo.svg
 
 execute:
   execute_notebooks: "off"
@@ -24,6 +24,10 @@ html:
 
 sphinx:
   config:
+    html_show_copyright: false
+    html_theme_options:
+      footer_start: []
+      footer_end: []
     exclude_patterns:
       - "README.md"
       - "_build/jupyter_execute/*"
