@@ -1,0 +1,23 @@
+/* === Personalización visual del curso === */
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+a {
+  color: #0069c0;
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+  color: #003366;
+}
+
+img {
+  border-radius: 8px;
+}
+
+/* Bloques de aviso o información */
+.admonition.tip {
+  background-color: #e3f2fd;
+  border-left: 4px solid #1565c0;
+}

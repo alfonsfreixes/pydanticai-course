@@ -2,6 +2,15 @@ format: jb-book
 root: index
 chapters:
   - file: 00-introduccion/README
+    sections:
+      - file: 00-introduccion/notebook_intro
   - file: 01-agentes-basicos/README
+    sections:
+      - file: 01-agentes-basicos/agentes_basicos
   - file: 02-contexto-y-validacion/README
+    sections:
+      - file: 02-contexto-y-validacion/validacion
   - file: 03-integracion-con-llms/README
+    sections:
+      - file: 03-integracion-con-llms/integracion_llms
+

@@ -1,6 +1,28 @@
-title: "PydanticAI desde cero"
+title: "Curso PydanticAI desde cero"
 author: "Alfons Freixes"
 logo: assets/logo.png
+favicon: assets/logo.png
+
 execute:
   execute_notebooks: "off"
-only_build_toc_files: true
+
+# ✅ Necesario para los botones de repo/editar/issues
+repository:
+  url: https://github.com/alfonsfreixes/pydanticai-course
+  branch: main
+  path_to_book: ""   # raíz del repo
+
+html:
+  use_repository_button: true
+  use_edit_page_button: true
+  use_issues_button: true
+  extra_css:
+    - assets/estilos.css
+  # ✅ Corrige el warning de GA (si no lo usas, déjalo vacío)
+  analytics:
+    google_analytics_id: ""
+
+sphinx:
+  config:
+    exclude_patterns:
+      - "README.md"

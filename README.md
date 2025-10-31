@@ -11,4 +11,5 @@ Este repo usa **Dev Containers** (recomendado). Abre con VS Code → “Reopen i
 
 ## Construir la web localmente
 ```bash
+jupyter-book clean --all .
 jupyter-book build .
