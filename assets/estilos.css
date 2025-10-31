@@ -22,16 +22,6 @@ img {
   border-left: 4px solid #1565c0;
 }
 
-/* Estilo del botón principal */
-a[href*="00-introduccion/README.html"] {
-  transition: all 0.2s ease-in-out;
-}
-
-a[href*="00-introduccion/README.html"]:hover {
-  background-color: #3b82f6;
-  transform: translateY(-2px);
-}
-
 /* Encabezado */
 h1 {
   color: #1e3a8a;
@@ -48,4 +38,43 @@ table {
 td, th {
   padding: 10px 20px;
   border-bottom: 1px solid #e2e8f0;
+}
+
+.hero-logo {
+  display: block;
+  margin: 40px auto 20px;
+  width: 180px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.hero-lead {
+  font-size: 1.2em;
+  color: #334155;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero-cta {
+  display: inline-block;
+  background-color: #1e3a8a;
+  color: #fff !important;
+  padding: 12px 28px;
+  margin-top: 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: all 0.2s ease-in-out;
+}
+
+.hero-cta:hover {
+  background-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+#curso-pydanticai-desde-cero {
+  text-align: center;
+  margin-top: 10px;
 }

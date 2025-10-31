@@ -2,28 +2,21 @@
 title: "Curso PydanticAI desde cero"
 ---
 
-<div style="text-align:center; margin-top:40px;">
-  <img src="assets/logo.png" alt="Logo del curso" width="180" style="border-radius:12px; margin-bottom:20px;" />
-  
-  # 🚀 Curso **PydanticAI desde cero**
+```{image} assets/logo.png
+:alt: Logo del curso
+:class: hero-logo
+:width: 180px
+:align: center
+```
 
-  <p style="font-size:1.2em; color:#334155; max-width:700px; margin:auto;">
-    Aprende a crear, validar y desplegar <strong>agentes inteligentes</strong> con <code>PydanticAI</code>.<br>
-    Un curso práctico paso a paso, desde los fundamentos hasta la integración con LLMs.
-  </p>
+# 🚀 Curso **PydanticAI desde cero**
 
-  <a href="00-introduccion/README.html" style="
-    display:inline-block;
-    background-color:#1e3a8a;
-    color:white;
-    padding:12px 28px;
-    margin-top:25px;
-    border-radius:8px;
-    font-weight:600;
-    text-decoration:none;
-    font-size:1.1em;
-  ">🎓 Empezar el curso</a>
-</div>
+<p class="hero-lead">
+  Aprende a crear, validar y desplegar <strong>agentes inteligentes</strong> con <code>PydanticAI</code>.<br>
+  Un curso práctico paso a paso, desde los fundamentos hasta la integración con LLMs.
+</p>
+
+<a class="hero-cta" href="00-introduccion/README.html">🎓 Empezar el curso</a>
 
 ---
 
