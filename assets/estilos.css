@@ -21,3 +21,31 @@ img {
   background-color: #e3f2fd;
   border-left: 4px solid #1565c0;
 }
+
+/* Estilo del botón principal */
+a[href*="00-introduccion/README.html"] {
+  transition: all 0.2s ease-in-out;
+}
+
+a[href*="00-introduccion/README.html"]:hover {
+  background-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+/* Encabezado */
+h1 {
+  color: #1e3a8a;
+  font-weight: 800;
+}
+
+/* Tabla del índice */
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  border: 1px solid #e2e8f0;
+}
+
+td, th {
+  padding: 10px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
