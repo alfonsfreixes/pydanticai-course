@@ -3,6 +3,7 @@ root: index
 chapters:
   - file: 00-introduccion/README
     sections:
+      - file: 00-introduccion/CheatSheet
       - file: 00-introduccion/notebook_intro
   - file: 01-agentes-basicos/README
     sections:
