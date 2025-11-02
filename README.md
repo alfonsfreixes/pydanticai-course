@@ -13,3 +13,11 @@ Este repo usa **Dev Containers** (recomendado). Abre con VS Code → “Reopen i
 ```bash
 jupyter-book clean --all .
 jupyter-book build .
+
+## Ver el curso en local
+
+estando en _build/html ejecuta:
+```bash
+python -m http.server 8000
+
+y abre http://localhost:8000 en tu navegador (VS Code hará el port forwarding automáticamente).

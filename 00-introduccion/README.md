@@ -30,52 +30,262 @@ Al completar este módulo, serás capaz de:
 
 ---
 
-## 1. Instalación
+## 1. Configuración del proyecto paso a paso
 
-### Instalación completa (recomendada para empezar)
+Esta sección te guiará para crear tu entorno de desarrollo desde cero usando **uv**, el gestor de paquetes moderno de Python.
 
+> 💡 **¿Por qué uv?** Es significativamente más rápido que pip, maneja automáticamente entornos virtuales, y simplifica la gestión de dependencias. Es la herramienta estándar que usaremos en todo el curso.
+
+### 1.1. Instalar uv
+
+Ejecuta el comando correspondiente a tu sistema operativo:
+
+**Linux y macOS:**
 ```bash
-pip install pydantic-ai
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Esta instalación incluye:
-- Framework core de PydanticAI
-- Dependencias para todos los modelos soportados
-- Pydantic Logfire para observabilidad
-
-### Instalación slim (para producción)
-
-Si solo vas a usar un proveedor específico:
-
-```bash
-# Solo para OpenAI
-pip install 'pydantic-ai-slim[openai]'
-
-# Solo para Anthropic
-pip install 'pydantic-ai-slim[anthropic]'
-
-# Solo para Gemini
-pip install 'pydantic-ai-slim[gemini]'
+**Windows (PowerShell como administrador):**
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### Verificación de instalación
+**Verificar instalación:**
+```bash
+uv --version
+# Debe mostrar algo como: uv 0.5.x
+```
+
+Si no reconoce el comando, reinicia tu terminal o sesión.
+
+### 1.2. Crear la estructura del proyecto
+
+Ejecuta estos comandos en tu terminal (funcionan en Linux, macOS y Windows):
 
 ```bash
-python -c "import pydantic_ai; print(pydantic_ai.__version__)"
+# Crear carpeta principal y entrar
+mkdir pydanticai-course
+cd pydanticai-course
+
+# Inicializar proyecto con uv
+uv init --name pydanticai-course
+
+# Crear estructura de módulos del curso
+mkdir 00-introduccion 01-agentes-basicos 02-contexto-validacion 03-integracion-llms
 ```
+
+Tu estructura quedará así:
+
+```
+pydanticai-course/
+├── pyproject.toml              # Configuración del proyecto
+├── .python-version             # Versión de Python del proyecto
+├── .gitignore                  # Generado por uv
+├── README.md                   # Generado por uv
+├── .env                        # Variables de entorno (lo crearemos)
+├── config.py                   # Configuración con Pydantic Settings
+├── 00-introduccion/            # Módulo 0: Introducción
+├── 01-agentes-basicos/         # Módulo 1: Agentes básicos
+├── 02-contexto-validacion/     # Módulo 2: Contexto y validación
+└── 03-integracion-llms/        # Módulo 3: Integración con LLMs
+```
+
+### 1.3. Instalar dependencias
+
+Desde la raíz del proyecto (`pydanticai-course/`):
+
+```bash
+# Instalar PydanticAI y pydantic-settings
+uv add pydantic-ai pydantic-settings
+```
+
+Esto instalará:
+- **pydantic-ai**: Framework core + todos los modelos soportados + Logfire
+- **pydantic-settings**: Para manejar configuración con validación de tipos
+
+### 1.4. Configurar variables de entorno
+
+**Paso 1: Crear archivo .env**
+
+En la raíz del proyecto, crea el archivo `.env` con tu editor favorito y pega este contenido:
+
+```bash
+# .env
+# API Keys para diferentes proveedores LLM
+ANTHROPIC_API_KEY=""
+OPENAI_API_KEY=""
+GOOGLE_API_KEY=""
+GROQ_API_KEY=""
+```
+
+**Paso 2: Agregar tus API keys**
+
+Edita el archivo `.env` y agrega al menos una API key:
+
+```bash
+# .env
+ANTHROPIC_API_KEY="sk-ant-tu-clave-real-aqui"
+OPENAI_API_KEY="sk-tu-clave-real-aqui"
+GOOGLE_API_KEY=""
+GROQ_API_KEY=""
+```
+
+> 💡 **¿Dónde conseguir API keys?**
+> - **Anthropic Claude**: [console.anthropic.com](https://console.anthropic.com) - Créditos gratis para empezar
+> - **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+> - **Google Gemini**: [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) - Gratis
+> - **Groq**: [console.groq.com/keys](https://console.groq.com/keys) - Gratis y ultra rápido
+
+### 1.5. Crear configuración con Pydantic Settings
+
+Crea el archivo `config.py` en la raíz del proyecto con tu editor de texto preferido:
+
+```python
+"""
+Configuración del proyecto usando Pydantic Settings.
+Las variables se cargan automáticamente desde el archivo .env
+"""
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """
+    Configuración de API keys para diferentes proveedores LLM.
+    
+    Pydantic Settings:
+    - Carga automáticamente desde .env
+    - Valida tipos automáticamente
+    - Proporciona errores claros si falta alguna variable requerida
+    """
+    
+    # API Keys (opcional = None permite que no estén todas configuradas)
+    anthropic_api_key: str | None = None
+    openai_api_key: str | None = None
+    google_api_key: str | None = None
+    groq_api_key: str | None = None
+    
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        case_sensitive=False,  # ANTHROPIC_API_KEY = anthropic_api_key
+        extra='ignore'  # Ignorar variables extra en .env
+    )
+    
+    def get_configured_providers(self) -> list[str]:
+        """Retorna lista de proveedores con API key configurada."""
+        providers = []
+        if self.anthropic_api_key:
+            providers.append("Anthropic")
+        if self.openai_api_key:
+            providers.append("OpenAI")
+        if self.google_api_key:
+            providers.append("Google")
+        if self.groq_api_key:
+            providers.append("Groq")
+        return providers
+
+
+# Instancia global de configuración
+settings = Settings()
+```
+
+### 1.6. Verificar la instalación
+
+Crea un script de verificación `verify_setup.py` en la raíz del proyecto:
+
+```python
+"""Script de verificación del setup del proyecto."""
+from config import settings
+
+print("🔍 Verificando instalación...\n")
+
+# Verificar PydanticAI
+try:
+    import pydantic_ai
+    print(f"✅ PydanticAI instalado: v{pydantic_ai.__version__}")
+except ImportError:
+    print("❌ PydanticAI no está instalado")
+    exit(1)
+
+# Verificar Pydantic Settings
+try:
+    import pydantic_settings
+    print(f"✅ Pydantic Settings instalado: v{pydantic_settings.__version__}")
+except ImportError:
+    print("❌ Pydantic Settings no está instalado")
+    exit(1)
+
+# Verificar configuración
+print("\n📋 API Keys configuradas:")
+providers = settings.get_configured_providers()
+
+if not providers:
+    print("⚠️  No hay API keys configuradas")
+    print("\nℹ️  Edita el archivo .env y agrega al menos una API key")
+    exit(1)
+
+for provider in providers:
+    print(f"✅ {provider}")
+
+print(f"\n🎉 ¡Setup completado! Puedes usar {len(providers)} proveedor(es).")
+```
+
+**Ejecutar verificación:**
+
+```bash
+uv run python verify_setup.py
+```
+
+**Salida esperada:**
+```
+🔍 Verificando instalación...
+
+✅ PydanticAI instalado: v1.8.0
+✅ Pydantic Settings instalado: v2.6.0
+
+📋 API Keys configuradas:
+✅ Anthropic
+✅ OpenAI
+
+🎉 ¡Setup completado! Puedes usar 2 proveedor(es).
+```
+
+### 1.7. Cómo ejecutar scripts
+
+Siempre ejecuta tus scripts con `uv run`:
+
+```bash
+# Desde la raíz del proyecto
+uv run python 00-introduccion/hello_agent.py
+uv run python verify_setup.py
+```
+
+`uv run` automáticamente:
+- Activa el entorno virtual
+- Instala dependencias si faltan
+- Ejecuta el script
 
 ---
 
 ## 2. Hello World con PydanticAI
 
-El ejemplo más simple posible:
+Ahora que ya tienes todo configurado, vamos a crear tu primer agente.
+
+### Crear el primer agente
+
+Crea el archivo `00-introduccion/hello_agent.py`:
 
 ```python
+"""
+Primer agente con PydanticAI.
+Demuestra el uso básico de un agente con instrucciones simples.
+"""
 from pydantic_ai import Agent
+from config import settings
 
-# Crear un agente con instrucciones básicas
+# Crear un agente con Claude Sonnet 4.5
 agent = Agent(
-    'anthropic:claude-sonnet-4-0',
+    'anthropic:claude-sonnet-4-5',
     instructions='Responde de forma concisa en una sola frase.'
 )
 
@@ -84,67 +294,89 @@ result = agent.run_sync('¿De dónde viene "Hello World"?')
 print(result.output)
 ```
 
+**Ejecutar el ejemplo:**
+
+```bash
+# Desde la raíz del proyecto
+uv run python 00-introduccion/hello_agent.py
+```
+
 **Salida esperada:**
 ```
 El primer uso conocido de "hello, world" fue en un libro de texto sobre el lenguaje C en 1974.
 ```
 
-### Ejecutar el ejemplo
-
-```bash
-# Configurar tu API key
-export ANTHROPIC_API_KEY="tu-api-key-aqui"
-
-# Ejecutar
-python hello_agent.py
-```
+> 💡 **Nota**: El script importa `settings` de `config.py`, que automáticamente carga las variables de entorno del archivo `.env`. Si obtienes un error de API key, verifica que tu `.env` contiene la clave correcta.
 
 ---
 
 ## 3. Configuración de proveedores
 
-### OpenAI (GPT-4, GPT-4o, GPT-4o-mini)
+> 💡 **Nota**: Todos los ejemplos asumen que ya tienes configurado tu archivo `.env` y `config.py`. Las API keys se cargan automáticamente desde ahí.
+
+### OpenAI (GPT-5, O3, O4-mini)
 
 ```python
 from pydantic_ai import Agent
+from config import settings
 
-agent = Agent('openai:gpt-4o-mini')
+# GPT-5 (modelo principal de OpenAI en 2025)
+agent = Agent('openai:gpt-5')
 
-# Configurar API key como variable de entorno
-# export OPENAI_API_KEY="sk-..."
+# O3-mini (modelo de razonamiento rápido)
+agent = Agent('openai:o3-mini')
+
+# O4-mini (modelo de razonamiento eficiente)
+agent = Agent('openai:o4-mini')
 ```
 
-### Anthropic (Claude)
+Requiere `OPENAI_API_KEY` en tu archivo `.env`.
+
+### Anthropic (Claude 4 y Claude Sonnet 4.5)
 
 ```python
-agent = Agent('anthropic:claude-sonnet-4-0')
+from pydantic_ai import Agent
+from config import settings
 
-# export ANTHROPIC_API_KEY="sk-ant-..."
+agent = Agent('anthropic:claude-sonnet-4-5')  # Modelo más inteligente
+agent = Agent('anthropic:claude-sonnet-4-0')  # Alternativa equilibrada
+agent = Agent('anthropic:claude-opus-4-1')    # Máxima capacidad
 ```
 
-### Google Gemini
+Requiere `ANTHROPIC_API_KEY` en tu archivo `.env`.
+
+### Google Gemini 2.5
 
 ```python
-agent = Agent('google-gla:gemini-2.5-flash')
+from pydantic_ai import Agent
+from config import settings
 
-# export GOOGLE_API_KEY="..."
+agent = Agent('google-gla:gemini-2.5-flash')  # Ultra rápido y eficiente
+agent = Agent('google-gla:gemini-2.5-pro')    # Mayor capacidad
 ```
+
+Requiere `GOOGLE_API_KEY` en tu archivo `.env`.
 
 ### Groq (ultra rápido)
 
 ```python
-agent = Agent('groq:llama-3.3-70b-versatile')
+from pydantic_ai import Agent
+from config import settings
 
-# export GROQ_API_KEY="..."
+agent = Agent('groq:llama-3.3-70b-versatile')
 ```
+
+Requiere `GROQ_API_KEY` en tu archivo `.env`.
 
 ### Ollama (local)
 
 ```python
-agent = Agent('ollama:llama3.2')
+from pydantic_ai import Agent
 
-# No requiere API key, pero necesitas Ollama corriendo localmente
+agent = Agent('ollama:llama3.2')
 ```
+
+No requiere API key, pero necesitas tener [Ollama](https://ollama.com) instalado y corriendo localmente.
 
 ### Proveedores compatibles con OpenAI API
 
@@ -174,12 +406,15 @@ agent = Agent(model)
 
 ## 4. Ejemplos prácticos básicos
 
+> 💡 **Nota**: Todos estos ejemplos asumen que ya tienes configurado `config.py` y tu archivo `.env` con al menos una API key. Las variables de entorno se cargan automáticamente.
+
 ### Ejemplo 1: Agente con instrucciones dinámicas
 
 ```python
 from pydantic_ai import Agent, RunContext
+from config import settings
 
-agent = Agent('openai:gpt-4o-mini', deps_type=str)
+agent = Agent('openai:gpt-5', deps_type=str)
 
 @agent.instructions
 def get_instructions(ctx: RunContext[str]) -> str:
@@ -200,8 +435,9 @@ print(result.output)
 ```python
 import asyncio
 from pydantic_ai import Agent
+from config import settings
 
-agent = Agent('openai:gpt-4o-mini')
+agent = Agent('openai:gpt-5')
 
 # 1. Síncrono (más simple)
 result_sync = agent.run_sync("¿Qué es Python?")
@@ -228,6 +464,7 @@ asyncio.run(stream_example())
 ```python
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
+from config import settings
 
 class CityInfo(BaseModel):
     """Información estructurada sobre una ciudad"""
@@ -238,7 +475,7 @@ class CityInfo(BaseModel):
 
 # Crear agente que devuelve datos estructurados
 agent = Agent(
-    'openai:gpt-4o',
+    'openai:gpt-5',
     output_type=CityInfo,
     instructions="Extrae información sobre la ciudad mencionada."
 )
@@ -257,9 +494,10 @@ print(f"Famosa por: {city.famous_for}")
 ```python
 from datetime import datetime
 from pydantic_ai import Agent, RunContext
+from config import settings
 
 agent = Agent(
-    'openai:gpt-4o-mini',
+    'openai:gpt-5',
     instructions="Puedes decir la fecha y hora actual cuando te lo pidan."
 )
 
@@ -270,7 +508,7 @@ def get_current_time(ctx: RunContext[None]) -> str:
 
 result = agent.run_sync("¿Qué hora es?")
 print(result.output)
-# "La hora actual es 2025-10-31 14:30:45"
+# "La hora actual es 2025-11-02 14:30:45"
 ```
 
 ---
@@ -293,11 +531,11 @@ Un **Agent** en PydanticAI es:
 from pydantic_ai import Agent
 
 agent = Agent(
-    model='openai:gpt-4o',              # Modelo a usar
-    instructions='Eres un experto en...',  # Sistema prompt
-    output_type=MiModelo,                # Salida estructurada
-    deps_type=MisDependencias,          # Tipo de dependencias
-    tools=[tool1, tool2],               # Herramientas disponibles
+    model='openai:gpt-5',                   # Modelo a usar
+    instructions='Eres un experto en...',   # Sistema prompt
+    output_type=MiModelo,                   # Salida estructurada
+    deps_type=MisDependencias,              # Tipo de dependencias
+    tools=[tool1, tool2],                   # Herramientas disponibles
 )
 ```
 
@@ -331,56 +569,65 @@ agent = Agent(
 
 ---
 
-## 6. Estructura del proyecto
-
-Estructura recomendada para el curso:
-
-```
-pydanticai-course/
-├── 00-introduccion/
-│   ├── README.md                 # Este archivo
-│   ├── hello_agent.py           # Ejemplo básico
-│   ├── structured_output.py     # Salidas estructuradas
-│   ├── first_tool.py            # Primera herramienta
-│   └── notebook_intro.ipynb     # Notebook interactivo
-├── 01-agentes-basicos/
-├── 02-tools-avanzadas/
-└── requirements.txt
-```
-
----
-
-## 7. Configuración de Logfire (opcional pero recomendado)
+## 6. Observabilidad con Logfire (opcional pero recomendado)
 
 Logfire es la plataforma de observabilidad de Pydantic. Te permite:
-- Ver el flujo completo de conversaciones
-- Debuggear llamadas a tools
-- Monitorear costos y tokens
-- Analizar performance
+- Ver el flujo completo de conversaciones con tu agente
+- Debuggear llamadas a tools en tiempo real
+- Monitorear costos y consumo de tokens
+- Analizar performance de tus agentes
 
-### Instalación y configuración
+### Instalación
+
+Logfire ya viene incluido con la instalación completa de `pydantic-ai`:
 
 ```bash
-# Ya incluido con pydantic-ai (no con slim)
-pip install pydantic-ai
+# Si instalaste pydantic-ai (no slim), ya tienes Logfire
+uv add pydantic-ai
 
-# Autenticar (primera vez)
-logfire auth
+# Si usaste la versión slim, agrégalo así:
+uv add 'pydantic-ai-slim[logfire]'
+```
 
-# En tu código
+### Configurar Logfire en tu proyecto
+
+```bash
+# Autenticar (solo la primera vez)
+uv run logfire auth
+
+# Seguir las instrucciones en el navegador
+```
+
+### Usar Logfire en tu código
+
+```python
 import logfire
+from pydantic_ai import Agent
+from config import settings
 
+# Configurar Logfire (una vez al inicio)
 logfire.configure()
 logfire.instrument_pydantic_ai()
 
-# Ahora todos tus agentes serán monitoreados
+# Ahora todos tus agentes serán monitoreados automáticamente
+agent = Agent('openai:gpt-5')
+result = agent.run_sync('¿Qué es Python?')
 ```
 
-Visita [logfire.pydantic.dev](https://logfire.pydantic.dev) para ver tus traces.
+### Ver tus traces
+
+Visita [logfire.pydantic.dev](https://logfire.pydantic.dev) para ver:
+- Cada llamada al LLM
+- Tokens consumidos
+- Tiempo de respuesta
+- Contenido completo de cada interacción
+- Llamadas a tools y sus resultados
+
+> 💡 **Tip**: Logfire es invaluable para debugging y optimización. Te muestra exactamente qué está pasando en cada interacción con el LLM.
 
 ---
 
-## 8. Comparación rápida con otros frameworks
+## 7. Comparación rápida con otros frameworks
 
 | Característica | PydanticAI | LangChain | CrewAI |
 |---------------|------------|-----------|---------|
@@ -392,54 +639,125 @@ Visita [logfire.pydantic.dev](https://logfire.pydantic.dev) para ver tus traces.
 
 ---
 
-## 9. Troubleshooting común
+## 8. Troubleshooting común
 
 ### Error: "No API key found"
 
+**Solución:**
+1. Verifica que el archivo `.env` existe en la raíz del proyecto
+2. Verifica que la API key está correctamente escrita (sin espacios extra)
+3. Ejecuta el script de verificación:
+
 ```bash
-# Asegúrate de exportar la variable correcta
-export OPENAI_API_KEY="sk-..."
-
-# En Windows PowerShell
-$env:OPENAI_API_KEY="sk-..."
-
-# O crear archivo .env
-echo 'OPENAI_API_KEY="sk-..."' > .env
+uv run python verify_setup.py
 ```
 
 ### Error: "Python version too old"
 
 ```bash
+# Verificar versión actual
 python --version  # Debe ser 3.10+
 
-# Actualizar con pyenv
-pyenv install 3.12
-pyenv local 3.12
+# Con uv puedes instalar y usar una versión específica
+uv python install 3.12
+uv python pin 3.12
+
+# Verificar que se aplicó
+python --version
 ```
 
-### Error de importación con modelos slim
+### Error: "Module 'pydantic_ai' not found"
+
+**Solución:**
+```bash
+# Asegúrate de ejecutar con uv run
+uv run python tu_script.py
+
+# O instala de nuevo las dependencias
+uv sync
+```
+
+### Error: "Settings validation error"
+
+Si `config.py` falla al cargar:
 
 ```bash
-# Si instalaste slim sin las dependencias necesarias
-pip install 'pydantic-ai-slim[openai]'  # Añade el proveedor
+# Verifica que pydantic-settings está instalado
+uv add pydantic-settings
+
+# Verifica que el .env tiene el formato correcto
+cat .env  # Linux/macOS
+type .env  # Windows
 ```
 
+### El script no encuentra el archivo .env
+
+Asegúrate de ejecutar los scripts desde la raíz del proyecto:
+
+```bash
+# ✅ Correcto (desde pydanticai-course/)
+uv run python 00-introduccion/hello_agent.py
+
+# ❌ Incorrecto (desde 00-introduccion/)
+cd 00-introduccion
+uv run python hello_agent.py  # No encontrará .env ni config.py
+```
+
+### Error: "command not found: uv"
+
+Si instalaste uv pero no lo reconoce:
+
+**Linux/macOS:**
+```bash
+# Agregar uv al PATH
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# Hacer permanente (añadir a ~/.bashrc o ~/.zshrc)
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Windows:**
+Reinicia la terminal o sesión de PowerShell después de instalar uv.
+
 ---
 
-## 10. Checklist de inicio
+## 9. Checklist de inicio
 
-Antes de continuar al Módulo 1, verifica:
+Antes de continuar al Módulo 1, verifica que completaste todos estos pasos:
 
-- [ ] Python 3.10+ instalado
-- [ ] `pydantic-ai` instalado correctamente
-- [ ] Al menos una API key configurada (OpenAI/Anthropic/Gemini)
-- [ ] `hello_agent.py` ejecuta sin errores
+### Instalación y Configuración
+- [ ] `uv` instalado y funcionando (`uv --version`)
+- [ ] Proyecto creado con `uv init` en `pydanticai-course/`
+- [ ] Estructura de carpetas creada con los 4 módulos:
+  - [ ] `00-introduccion/`
+  - [ ] `01-agentes-basicos/`
+  - [ ] `02-contexto-validacion/`
+  - [ ] `03-integracion-llms/`
+
+### Dependencias
+- [ ] `pydantic-ai` instalado (`uv add pydantic-ai`)
+- [ ] `pydantic-settings` instalado (`uv add pydantic-settings`)
+
+### Configuración
+- [ ] Archivo `.env` creado en la raíz con al menos una API key
+- [ ] Archivo `config.py` creado con la clase `Settings`
+- [ ] Script `verify_setup.py` creado
+
+### Validación
+- [ ] `uv run python verify_setup.py` muestra ✅ para al menos un proveedor
+- [ ] `uv run python 00-introduccion/hello_agent.py` ejecuta correctamente
 - [ ] Entiendes qué es un Agent y para qué sirve
-- [ ] (Opcional) Logfire configurado y funcionando
+- [ ] Entiendes cómo funciona Pydantic Settings para cargar variables de entorno
+
+### Opcional
+- [ ] Logfire configurado y funcionando
+
+Si todos los checks están completos, ¡estás listo para el Módulo 1: Agentes Básicos! 🚀
 
 ---
 
-## 11. Ejercicios prácticos
+## 10. Ejercicios prácticos
 
 ### Nivel 1: Básico
 
@@ -482,7 +800,7 @@ Antes de continuar al Módulo 1, verifica:
 
 ---
 
-## 12. Recursos adicionales
+## 11. Recursos adicionales
 
 ### Documentación oficial
 
@@ -505,15 +823,32 @@ Antes de continuar al Módulo 1, verifica:
 
 ---
 
-## 13. Próximos pasos
+## 12. Próximos pasos
 
-En el **Módulo 1 - Agentes Básicos** aprenderás:
+### Módulo 1 - Agentes Básicos
 
+En el próximo módulo aprenderás:
+
+- Construcción y ejecución de diferentes tipos de agentes
 - Prompting avanzado con instrucciones dinámicas
 - Salidas estructuradas complejas con validación
 - Creación de herramientas/tools personalizadas
 - Manejo de errores y validación con reflection
 - Dependency injection para contexto compartido
+
+### Módulo 2 - Contexto y Validación
+
+- Gestión avanzada del contexto de conversación
+- Validación robusta de entradas y salidas
+- Manejo de estados y memoria entre ejecuciones
+- Estrategias de validación con Pydantic
+
+### Módulo 3 - Integración con LLMs
+
+- Conexión y configuración de diferentes proveedores
+- Optimización de prompts y parámetros
+- Estrategias de despliegue en producción
+- Monitoreo y observabilidad con Logfire
 
 ---
 

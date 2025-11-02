@@ -1,40 +1,73 @@
 # PydanticAI Cheat Sheet - Módulo 0
 
-Referencia rápida de los comandos y patrones más usados.
+Referencia rápida de comandos y patrones más usados con **uv** y **Pydantic Settings**.
 
 ---
 
-## 🚀 Instalación rápida
+## 🚀 Setup inicial (una sola vez)
 
 ```bash
-# Instalación completa
-pip install pydantic-ai
+# 1. Instalar uv
+curl -LsSf https://astral.sh/uv/install.sh | sh  # Linux/macOS
+# o en Windows PowerShell:
+# powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-# Solo OpenAI
-pip install 'pydantic-ai-slim[openai]'
+# 2. Crear proyecto
+mkdir pydanticai-course && cd pydanticai-course
+uv init --name pydanticai-course
 
-# Solo Anthropic
-pip install 'pydantic-ai-slim[anthropic]'
+# 3. Crear estructura de módulos
+mkdir 00-introduccion 01-agentes-basicos 02-contexto-validacion 03-integracion-llms
 
-# Verificar instalación
-python -c "import pydantic_ai; print(pydantic_ai.__version__)"
+# 4. Instalar dependencias
+uv add pydantic-ai pydantic-settings
+
+# 5. Crear config.py y .env (ver sección Configuración)
 ```
 
 ---
 
-## 🔑 Configurar API Keys
+## 🔧 Configuración con Pydantic Settings
+
+### Archivo `config.py` (raíz del proyecto)
+
+```python
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    anthropic_api_key: str | None = None
+    openai_api_key: str | None = None
+    google_api_key: str | None = None
+    groq_api_key: str | None = None
+    
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        case_sensitive=False,
+        extra='ignore'
+    )
+
+settings = Settings()
+```
+
+### Archivo `.env` (raíz del proyecto)
 
 ```bash
-# En terminal (Linux/Mac)
-export OPENAI_API_KEY="sk-..."
-export ANTHROPIC_API_KEY="sk-ant-..."
-export GOOGLE_API_KEY="..."
+# .env
+ANTHROPIC_API_KEY="sk-ant-tu-clave-aqui"
+OPENAI_API_KEY="sk-tu-clave-aqui"
+GOOGLE_API_KEY=""
+GROQ_API_KEY=""
+```
 
-# En Windows PowerShell
-$env:OPENAI_API_KEY="sk-..."
+### Usar en tus scripts
 
-# O crear archivo .env
-echo 'OPENAI_API_KEY="sk-..."' > .env
+```python
+from config import settings  # Se carga automáticamente desde .env
+from pydantic_ai import Agent
+
+agent = Agent('openai:gpt-5')
+# Las API keys ya están disponibles
 ```
 
 ---
@@ -45,8 +78,9 @@ echo 'OPENAI_API_KEY="sk-..."' > .env
 
 ```python
 from pydantic_ai import Agent
+from config import settings
 
-agent = Agent('openai:gpt-4o-mini')
+agent = Agent('openai:gpt-5')
 result = agent.run_sync('¿Qué es Python?')
 print(result.output)
 ```
@@ -55,7 +89,7 @@ print(result.output)
 
 ```python
 agent = Agent(
-    'openai:gpt-4o-mini',
+    'anthropic:claude-sonnet-4-5',
     instructions='Eres un experto en Python. Responde de forma concisa.'
 )
 ```
@@ -63,6 +97,8 @@ agent = Agent(
 ### Instrucciones dinámicas
 
 ```python
+from pydantic_ai import RunContext
+
 @agent.instructions
 def get_instructions(ctx: RunContext[str]) -> str:
     return f"El usuario es {ctx.deps}"
@@ -70,22 +106,26 @@ def get_instructions(ctx: RunContext[str]) -> str:
 
 ---
 
-## 🎯 Modelos de diferentes proveedores
+## 🎯 Modelos disponibles (noviembre 2025)
 
 ```python
-# OpenAI
-agent = Agent('openai:gpt-4o-mini')
-agent = Agent('openai:gpt-4o')
+from config import settings
 
-# Anthropic
-agent = Agent('anthropic:claude-sonnet-4-0')
-agent = Agent('anthropic:claude-opus-4-0')
+# OpenAI (2025)
+agent = Agent('openai:gpt-5')           # Modelo principal
+agent = Agent('openai:o3-mini')         # Razonamiento rápido
+agent = Agent('openai:o4-mini')         # Razonamiento eficiente
 
-# Google Gemini
-agent = Agent('google-gla:gemini-2.5-flash')
-agent = Agent('google-gla:gemini-2.5-pro')
+# Anthropic Claude 4
+agent = Agent('anthropic:claude-sonnet-4-5')  # Más inteligente
+agent = Agent('anthropic:claude-sonnet-4-0')  # Equilibrado
+agent = Agent('anthropic:claude-opus-4-1')    # Máxima capacidad
 
-# Groq (rápido)
+# Google Gemini 2.5
+agent = Agent('google-gla:gemini-2.5-flash')  # Ultra rápido
+agent = Agent('google-gla:gemini-2.5-pro')    # Mayor capacidad
+
+# Groq (ultra rápido)
 agent = Agent('groq:llama-3.3-70b-versatile')
 
 # Ollama (local)
@@ -98,13 +138,16 @@ agent = Agent('ollama:llama3.2')
 
 ```python
 from pydantic import BaseModel, Field
+from pydantic_ai import Agent
+from config import settings
 
 class CityInfo(BaseModel):
     name: str
     country: str
     population: int = Field(gt=0)
+    famous_for: str
 
-agent = Agent('openai:gpt-4o', output_type=CityInfo)
+agent = Agent('openai:gpt-5', output_type=CityInfo)
 result = agent.run_sync('Info sobre París')
 city = result.output  # Tipo CityInfo validado
 ```
@@ -116,6 +159,9 @@ city = result.output  # Tipo CityInfo validado
 ### Tool básica
 
 ```python
+from datetime import datetime
+from pydantic_ai import RunContext
+
 @agent.tool
 def get_time(ctx: RunContext[None]) -> str:
     """Obtiene la hora actual."""
@@ -126,7 +172,7 @@ def get_time(ctx: RunContext[None]) -> str:
 
 ```python
 @agent.tool
-def sumar(a: float, b: float) -> float:
+def sumar(ctx: RunContext[None], a: float, b: float) -> float:
     """Suma dos números."""
     return a + b
 ```
@@ -172,13 +218,15 @@ async with agent.run_stream('prompt') as result:
 
 ```python
 from dataclasses import dataclass
+from pydantic_ai import Agent, RunContext
+from config import settings
 
 @dataclass
 class Deps:
     user_id: int
     db: Database
 
-agent = Agent('openai:gpt-4o-mini', deps_type=Deps)
+agent = Agent('openai:gpt-5', deps_type=Deps)
 
 @agent.tool
 def get_user_data(ctx: RunContext[Deps]) -> dict:
@@ -217,7 +265,7 @@ settings = ModelSettings(
 )
 
 # En el agente
-agent = Agent('openai:gpt-4o', model_settings=settings)
+agent = Agent('openai:gpt-5', model_settings=settings)
 
 # En runtime
 result = agent.run_sync('prompt', model_settings=settings)
@@ -225,19 +273,21 @@ result = agent.run_sync('prompt', model_settings=settings)
 
 ---
 
-## 🔍 Debugging con Logfire
+## 🔍 Observabilidad con Logfire
 
 ```python
 import logfire
+from pydantic_ai import Agent
+from config import settings
 
-# Configurar (primera vez)
-# logfire auth
+# Configurar (primera vez desde terminal)
+# uv run logfire auth
 
 # En tu código
 logfire.configure()
 logfire.instrument_pydantic_ai()
 
-# Ahora todos los agentes son observables en:
+# Todos los agentes son observables en:
 # https://logfire.pydantic.dev
 ```
 
@@ -248,11 +298,15 @@ logfire.instrument_pydantic_ai()
 ### Pattern 1: Extractor de datos
 
 ```python
+from pydantic import BaseModel
+from pydantic_ai import Agent
+from config import settings
+
 class Data(BaseModel):
     name: str
     value: float
 
-agent = Agent('openai:gpt-4o', output_type=Data)
+agent = Agent('openai:gpt-5', output_type=Data)
 result = agent.run_sync("Apple vale $180")
 # result.output.name == "Apple"
 # result.output.value == 180.0
@@ -261,14 +315,22 @@ result = agent.run_sync("Apple vale $180")
 ### Pattern 2: Multi-tool agent
 
 ```python
-@agent.tool
-def tool_a(ctx): ...
+from pydantic_ai import Agent, RunContext
+from config import settings
+
+agent = Agent('openai:gpt-5')
 
 @agent.tool
-def tool_b(ctx): ...
+def tool_a(ctx: RunContext[None]) -> str:
+    return "Resultado A"
 
 @agent.tool
-def tool_c(ctx): ...
+def tool_b(ctx: RunContext[None]) -> str:
+    return "Resultado B"
+
+@agent.tool
+def tool_c(ctx: RunContext[None]) -> str:
+    return "Resultado C"
 
 # El modelo decide cuál usar
 ```
@@ -276,6 +338,17 @@ def tool_c(ctx): ...
 ### Pattern 3: Context-aware
 
 ```python
+from dataclasses import dataclass
+from pydantic_ai import Agent, RunContext
+from config import settings
+
+@dataclass
+class User:
+    name: str
+    level: int
+
+agent = Agent('openai:gpt-5', deps_type=User)
+
 @agent.instructions
 def instructions(ctx: RunContext[User]) -> str:
     return f"Usuario: {ctx.deps.name}, nivel: {ctx.deps.level}"
@@ -285,28 +358,68 @@ result = agent.run_sync('query', deps=current_user)
 
 ---
 
-## 🚨 Errores comunes
+## 🚨 Troubleshooting
 
 ### Error: No API key found
 
 ```bash
-# Solución
-export OPENAI_API_KEY="tu-key"
+# Verifica tu archivo .env
+cat .env  # Linux/macOS
+type .env  # Windows
+
+# Debe contener:
+OPENAI_API_KEY="sk-..."
 ```
 
-### Error: Python version too old
+### Error: Settings validation error
 
 ```bash
-# Solución: actualizar a Python 3.10+
-pyenv install 3.12
-pyenv local 3.12
+# Asegúrate de tener pydantic-settings instalado
+uv add pydantic-settings
+
+# Verifica que config.py existe en la raíz
 ```
 
-### Error: Module not found
+### Error: Module 'pydantic_ai' not found
 
 ```bash
-# Solución: instalar dependencias
-pip install 'pydantic-ai-slim[openai]'
+# Ejecuta siempre con uv run
+uv run python tu_script.py
+
+# O reinstala
+uv add pydantic-ai
+```
+
+### Error: No se encuentra .env
+
+```bash
+# Ejecuta desde la raíz del proyecto
+cd pydanticai-course
+uv run python 00-introduccion/hello_agent.py
+```
+
+---
+
+## 🎯 Comandos útiles con uv
+
+```bash
+# Ejecutar script
+uv run python 00-introduccion/hello_agent.py
+
+# Verificar instalación
+uv run python verify_setup.py
+
+# Agregar dependencia
+uv add nombre-paquete
+
+# Ver dependencias instaladas
+uv pip list
+
+# Sincronizar dependencias
+uv sync
+
+# Actualizar uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ---
@@ -317,41 +430,66 @@ pip install 'pydantic-ai-slim[openai]'
 - **Ejemplos**: https://ai.pydantic.dev/examples/
 - **API Ref**: https://ai.pydantic.dev/api/agent/
 - **GitHub**: https://github.com/pydantic/pydantic-ai
-- **Slack**: https://logfire.pydantic.dev/docs/join-slack/
-
----
-
-## 🎯 Comandos útiles
-
-```bash
-# Ejecutar ejemplos
-python ejemplos_basicos.py
-
-# Verificar setup
-python verificar_setup.py
-
-# Jupyter notebook
-jupyter notebook notebook_intro.ipynb
-
-# Ver tokens usados
-python -c "from pydantic_ai import Agent; a=Agent('openai:gpt-4o-mini'); r=a.run_sync('hola'); print(r.usage())"
-```
+- **Pydantic Settings**: https://docs.pydantic.dev/latest/concepts/pydantic_settings/
+- **uv Docs**: https://docs.astral.sh/uv/
 
 ---
 
 ## 💡 Tips rápidos
 
-1. **Empieza simple**: Un agente básico primero
-2. **Valida siempre**: Usa Pydantic models para outputs
-3. **Type hints**: TypeScript para Python, úsalos
-4. **Logfire early**: Configúralo desde el principio
-5. **Async cuando puedas**: Mejor performance
-6. **Tools pequeñas**: Una función, una responsabilidad
-7. **Tests con mocks**: Usa TestModel para testing
+1. **Usa uv run**: Siempre ejecuta con `uv run python script.py`
+2. **config.py primero**: Crea tu configuración antes de cualquier script
+3. **Valida siempre**: Usa Pydantic models para outputs
+4. **Type hints**: Fundamentales para auto-completado
+5. **Logfire early**: Configúralo desde el principio
+6. **Async cuando puedas**: Mejor performance
+7. **Tools pequeñas**: Una función, una responsabilidad
 8. **Deps inyectadas**: Mejor que variables globales
 9. **Streaming UX**: Para mejor experiencia de usuario
 10. **Cost tracking**: Monitorea tokens desde el día 1
 
 ---
 
-**¡Esto es todo lo que necesitas para empezar! 🚀**
+## 📋 Estructura del proyecto
+
+```
+pydanticai-course/
+├── config.py                    # ⭐ Configuración con Pydantic Settings
+├── .env                         # ⭐ API keys (no subir a git)
+├── verify_setup.py              # Script de verificación
+├── pyproject.toml               # Dependencias (gestionado por uv)
+├── .python-version              # Versión de Python
+├── 00-introduccion/             # Módulo 0
+├── 01-agentes-basicos/          # Módulo 1
+├── 02-contexto-validacion/      # Módulo 2
+└── 03-integracion-llms/         # Módulo 3
+```
+
+---
+
+## 🔑 Ejemplo completo mínimo
+
+```python
+# 00-introduccion/hello_agent.py
+from pydantic_ai import Agent
+from config import settings
+
+agent = Agent(
+    'anthropic:claude-sonnet-4-5',
+    instructions='Responde de forma concisa.'
+)
+
+result = agent.run_sync('¿Qué es Python?')
+print(result.output)
+```
+
+**Ejecutar:**
+```bash
+uv run python 00-introduccion/hello_agent.py
+```
+
+---
+
+**¡Con esto tienes todo lo esencial para trabajar con PydanticAI! 🚀**
+
+> **Nota**: Esta cheat sheet está actualizada a noviembre 2025 con uv, Pydantic Settings y los modelos LLM más recientes.
