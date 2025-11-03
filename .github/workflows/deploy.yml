@@ -3,8 +3,8 @@ name: Deploy JupyterBook
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:  # ← Añade esto para poder ejecutar manualmente
 
-# 👇 Permisos necesarios para poder pushear a gh-pages
 permissions:
   contents: write
 
@@ -23,6 +23,15 @@ jobs:
 
       - name: Build book
         run: jupyter-book build .
+
+      # ← AÑADE ESTE PASO NUEVO
+      - name: List build output
+        run: |
+          echo "📁 Contenido de _build/html:"
+          ls -la _build/html/ || echo "❌ Carpeta _build/html no existe"
+          echo ""
+          echo "¿Existe index.html?"
+          test -f _build/html/index.html && echo "✅ Sí" || echo "❌ No"
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
