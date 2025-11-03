@@ -2,13 +2,6 @@
 title: "Curso PydanticAI desde cero"
 ---
 
-```{image} assets/logo.png
-:alt: Logo del curso
-:class: hero-logo
-:width: 180px
-:align: center
-```
-
 # 🚀 Curso **PydanticAI desde cero**
 
 <p class="hero-lead">
