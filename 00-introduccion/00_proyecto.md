@@ -292,31 +292,69 @@ for consulta in consultas:
 
 ## 🚀 Próximos pasos
 
-### **Módulo 1**
+El asistente deberá **evolucionar módulo a módulo** incorporando:
+
+| Módulo | Evolución de DataPulse AI |
+|--------|---------------------------|
+| **0. Introducción** | Validación básica + datos mock inline + cálculos simples |
+| **1. Agentes básicos** | Tools analíticas + validación estricta + reflection |
+| **2. Contexto y validación** | Lectura CSV + gestión de contexto + conversación multi-turno |
+| **3. Integración con LLMs** | Conexión a APIs reales + despliegue + observabilidad |
+
+---
+
+### **Módulo 1 – Agentes básicos**
 Evolucionarás este agente para:
-- Implementar **tools** que calculen KPIs automáticamente
-- Añadir validación estricta de rangos de fechas
-- Detectar anomalías en los datos (outliers, valores negativos)
+- Implementar **tools** que calculen KPIs automáticamente (`@agent.tool`)
+- Añadir validación estricta de rangos de fechas y valores
+- Implementar **reflection**: el agente valida sus propios cálculos
+- Manejar errores cuando faltan datos o hay inconsistencias
 
-### **Módulo 2**
-- Reemplazar datos mock por **lectura de CSV**
-- Validar estructura de archivos con Pydantic
-- Implementar caché de datos procesados
+**Ejemplo de tool:**
+```python
+@agent.tool
+def calcular_crecimiento(ctx: RunContext[None], periodo_actual: list[float], periodo_anterior: list[float]) -> dict:
+    """Calcula crecimiento porcentual entre dos períodos"""
+    total_actual = sum(periodo_actual)
+    total_anterior = sum(periodo_anterior)
+    pct = ((total_actual - total_anterior) / total_anterior) * 100
+    return {"anterior": total_anterior, "actual": total_actual, "crecimiento_pct": round(pct, 2)}
+```
 
-### **Módulo 3**
-- Crear agentes especializados (ventas, productos, forecast)
-- Implementar agente coordinador que delega a especialistas
-- Añadir reflection para validar calidad de respuestas
+---
 
-### **Módulo 4**
-- Conectar con APIs reales (Google Sheets, CRM, ERP)
-- Implementar autenticación y manejo de errores robusto
-- Persistencia de resultados en base de datos
+### **Módulo 2 – Contexto y validación**
+- Reemplazar datos mock por **lectura de CSV** con validación Pydantic
+- Implementar **gestión de contexto**: el agente recuerda consultas previas
+- Permitir **conversación multi-turno** (historial de mensajes)
+- Validar estructura y calidad de archivos de datos
 
-### **Módulo Final**
-- Desplegar con Gradio para interfaz web
-- Dockerizar la aplicación
-- Añadir observabilidad con Logfire
+**Ejemplo de contexto:**
+```python
+# El usuario puede hacer seguimiento:
+# Usuario: "¿Qué producto creció más en Q3?"
+# Agente: "Premium con +33%"
+# Usuario: "¿Y cuánto vendió en total?" ← El agente recuerda que hablamos de Premium
+# Agente: "Premium vendió 24k€ en Q3"
+```
+
+---
+
+### **Módulo 3 – Integración con LLMs**
+- Conectar con **APIs reales** (Google Sheets, bases de datos, CRMs)
+- Implementar **agentes especializados** (agente de ventas, agente de productos, agente forecast)
+- Crear **agente coordinador** que delega a especialistas según la consulta
+- **Desplegar** con Gradio o FastAPI
+- Añadir **observabilidad** con Logfire para monitorear tokens y performance
+
+**Arquitectura final:**
+```
+Usuario → Agente Coordinador → [Agente Ventas | Agente Productos | Agente Forecast]
+                              ↓
+                         Google Sheets / PostgreSQL
+                              ↓
+                         Logfire (observabilidad)
+```
 
 ---
 
