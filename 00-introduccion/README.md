@@ -170,9 +170,9 @@ uv run python 00-introduccion/hello_agent.py
 ### Anthropic Claude (recomendado para agentes)
 
 **Modelos disponibles (noviembre 2025):**
-- `claude-sonnet-4-5-20250929` - Más inteligente (\$3/\$15)
-- `claude-opus-4-1` - Máxima capacidad (\$15/\$75)
-- `claude-haiku-4-5` - Más rápido (\$1/\$5)
+- `claude-sonnet-4-5-20250929` - Más inteligente
+- `claude-opus-4-1` - Máxima capacidad
+- `claude-haiku-4-5` - Más rápido
 
 ```python
 from pydantic_ai.models.anthropic import AnthropicModel
@@ -366,40 +366,174 @@ Ver trazas en [logfire.pydantic.dev](https://logfire.pydantic.dev) con tokens, t
 ---
 
 ## 8. Ejercicios
+---
+## 1) Respuesta de atención al cliente (tono y brevedad)
 
-### Básico
+**Archivo:** `00-introduccion/ej01_atencion_cliente.py`
+**Objetivo:** Configura un agente que devuelva una respuesta **en 2 frases** a una queja de cliente con tono profesional y empático.
+**Conceptos:** `instructions`, `run_sync`, patrón `Model(..., provider=Provider(...))`.
 
-**1. Modificar el primer agente**
-- Archivo: `00-introduccion/ejercicio_01_modificar.py`
-- Objetivo: Cambia las instrucciones de `hello_agent.py` para que responda como un pirata
-- Conceptos: Parámetro `instructions`
+**Starter:**
 
-**2. Experimentar con prompts**
-- Archivo: `00-introduccion/ejercicio_02_prompts.py`
-- Objetivo: Crea un agente y prueba 3 preguntas diferentes sobre Python
-- Conceptos: `agent.run_sync()`, diferentes inputs
+```python
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIChatModel as Model
+from pydantic_ai.providers.openai import OpenAIProvider as Provider
+from config import settings
 
-**3. Cambiar de modelo**
-- Archivo: `00-introduccion/ejercicio_03_modelo.py`
-- Objetivo: Si tienes OpenAI, modifica `hello_agent.py` para usar GPT-5 en lugar de Claude
-- Conceptos: Diferentes modelos y providers
+model = Model("gpt-5", provider=Provider(api_key=settings.openai_api_key))
+agent = Agent(model, instructions="Responde como agente de soporte: tono empático, 2 frases, ofrece siguiente paso claro.")
+print(agent.run_sync("El envío llegó dañado y nadie responde.").output)
+```
 
-### Opcional
+**Criterio de aceptación:** 1) Máx. 2 frases. 2) Tono profesional. 3) Incluye un siguiente paso (p.ej., abrir ticket o reembolso).
 
-**4. Comparar respuestas**
-- Archivo: `00-introduccion/ejercicio_04_comparar.py`
-- Objetivo: Si tienes 2 API keys, ejecuta el mismo prompt en ambos modelos y compara
-- Conceptos: Múltiples modelos (solo si aplica)
+---
 
-**5. Manejo de errores**
-- Archivo: `00-introduccion/ejercicio_05_errores.py`
-- Objetivo: Modifica `hello_agent.py` para mostrar un mensaje personalizado si falla
-- Conceptos: `try/except`, mensajes de error claros
+## 2) Cualificación rápida de leads (salida estructurada)
 
-**6. Script de verificación personalizado**
-- Archivo: `00-introduccion/ejercicio_06_verificar.py`
-- Objetivo: Crea tu propio script de verificación que pruebe que tu agente funciona
-- Conceptos: Testing básico, validación de setup
+**Archivo:** `00-introduccion/ej02_lead_scoring.py`
+**Objetivo:** Extrae de un mensaje libre los campos `company`, `need`, `budget_eur` (int, opcional) y `fit` ∈ {low, medium, high}.
+**Conceptos:** `output_type` con `pydantic.BaseModel`.
+
+**Starter:**
+
+```python
+from pydantic import BaseModel, Field
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIChatModel as Model
+from pydantic_ai.providers.openai import OpenAIProvider as Provider
+from config import settings
+
+class Lead(BaseModel):
+    company: str
+    need: str
+    budget_eur: int | None = None
+    fit: str = Field(pattern="^(low|medium|high)$")
+
+model = Model("gpt-5", provider=Provider(api_key=settings.openai_api_key))
+agent = Agent(model, output_type=Lead, instructions="Extrae y normaliza campos para cualificación de lead.")
+lead = agent.run_sync("Somos RetailNova, buscamos forecast de demanda, presupuesto ~15k€.").output
+print(lead.model_dump())
+```
+
+**Criterio de aceptación:** Devuelve dict con claves exactas; rechaza `fit` fuera del patrón (valida el tipado).
+
+---
+
+## 3) Tool de negocio: cálculo de IVA y total
+
+**Archivo:** `00-introduccion/ej03_tool_iva_total.py`
+**Objetivo:** Implementa una tool `calc_total(con_impuestos: bool)` que: suma líneas, aplica IVA 21% si `con_impuestos=True`, y devuelve `{subtotal, iva, total}`.
+**Conceptos:** `@agent.tool`, `RunContext`, tools simples.
+
+**Starter:**
+
+```python
+from pydantic_ai import Agent, RunContext
+from pydantic_ai.models.anthropic import AnthropicModel as Model
+from pydantic_ai.providers.anthropic import AnthropicProvider as Provider
+from config import settings
+
+model = Model("claude-haiku-4-5", provider=Provider(api_key=settings.anthropic_api_key))
+agent = Agent(model)
+
+@agent.tool
+def calc_total(ctx: RunContext[None], lineas: list[float], con_impuestos: bool=True) -> dict:
+    subtotal = round(sum(lineas), 2)
+    iva = round(subtotal * 0.21, 2) if con_impuestos else 0.0
+    return {"subtotal": subtotal, "iva": iva, "total": round(subtotal + iva, 2)}
+
+print(agent.run_sync("Carrito: [49.9, 10.0, 3.1]. Calcula total con IVA. Usa la tool.").output)
+```
+
+**Criterio de aceptación:** Devuelve los tres campos con 2 decimales; el agente llama a la tool.
+
+---
+
+## 4) Instrucciones dinámicas por marca (branding)
+
+**Archivo:** `00-introduccion/ej04_branding_dinamico.py`
+**Objetivo:** Ajusta el tono según la marca pasada en `deps`: `"ICSO"` (directo y técnico) o `"TeachTools"` (didáctico y cercano).
+**Conceptos:** `deps_type`, `@agent.instructions`.
+
+**Starter:**
+
+```python
+from pydantic_ai import Agent, RunContext
+from pydantic_ai.models.openai import OpenAIChatModel as Model
+from pydantic_ai.providers.openai import OpenAIProvider as Provider
+from config import settings
+
+model = Model("gpt-5-mini", provider=Provider(api_key=settings.openai_api_key))
+agent = Agent(model, deps_type=str)
+
+@agent.instructions
+def brand_instructions(ctx: RunContext[str]) -> str:
+    brand = ctx.deps
+    if brand == "ICSO":
+        return "Tono: directo, técnico; 3 frases máximo."
+    return "Tono: didáctico, cercano; ejemplos simples; 3 frases máximo."
+
+print(agent.run_sync("Explica nuestra propuesta de valor en 3 frases.", deps="ICSO").output)
+print(agent.run_sync("Explica nuestra propuesta de valor en 3 frases.", deps="TeachTools").output)
+```
+
+**Criterio de aceptación:** Cambia el estilo claramente entre marcas, manteniendo límite de 3 frases.
+
+---
+
+## 5) Manejo de errores y fallback elegante
+
+**Archivo:** `00-introduccion/ej05_fallback_error.py`
+**Objetivo:** Si la llamada falla (p.ej., sin API key), captura la excepción y devuelve un mensaje corporativo con pasos de remedio.
+**Conceptos:** `try/except`, UX de error profesional.
+
+**Starter:**
+
+```python
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIChatModel as Model
+from pydantic_ai.providers.openai import OpenAIProvider as Provider
+from config import settings
+
+model = Model("gpt-5", provider=Provider(api_key=settings.openai_api_key))
+agent = Agent(model, instructions="Resumen en una frase del correo del cliente.")
+
+try:
+    print(agent.run_sync("Cliente: pide roadmap y precios para Q1.").output)
+except Exception as e:
+    print("No hemos podido procesar tu solicitud ahora. Verifica la API key y reintenta; si persiste, contacta soporte con el código: E-LLM-001.")
+```
+
+**Criterio de aceptación:** En fallo, muestra mensaje corporativo único (no traza), con acción y código interno.
+
+---
+
+## 6) Smoke test de negocio (verificación mínima)
+
+**Archivo:** `00-introduccion/ej06_smoke_negocio.py`
+**Objetivo:** Ejecuta un prompt fijo (“Redacta un asunto y 3 bullets para un email comercial sobre X”) y verifica rápido: longitud < 120 palabras y contiene “Asunto:”.
+**Conceptos:** prueba mínima “listo para demo”.
+
+**Starter:**
+
+```python
+from pydantic_ai import Agent
+from pydantic_ai.models.anthropic import AnthropicModel as Model
+from pydantic_ai.providers.anthropic import AnthropicProvider as Provider
+from config import settings
+
+model = Model("claude-haiku-4-5", provider=Provider(api_key=settings.anthropic_api_key))
+agent = Agent(model, instructions="Devuelve: 'Asunto: ...' y 3 viñetas claras, máx. 120 palabras.")
+
+out = agent.run_sync("Redacta un asunto y 3 bullets para un email comercial sobre auditoría de datos.").output
+ok = "Asunto:" in out and len(out.split()) < 120
+print("OK" if ok else "FAIL")
+print(out)
+```
+
+**Criterio de aceptación:** Imprime “OK” y la propuesta formateada; si no, “FAIL”.
 
 ---
 
