@@ -1,17 +1,17 @@
 # 🧭 Caso de uso empresarial: **DataPulse AI – Asistente de análisis de datos para PYMEs**
 
 > **Mini-proyecto transversal del curso PydanticAI**
-> A lo largo del curso, construirás paso a paso un agente inteligente que analiza datos reales de negocio y genera insights ejecutivos.
+> A lo largo del curso, construirás paso a paso un agente inteligente que ayuda a empresas a entender y resumir sus datos internos de negocio.
 
 ---
 
 ## 🧩 Contexto
 
-En 2025, las pequeñas y medianas empresas están adoptando **IA generativa aplicada a datos** para mejorar la toma de decisiones.
+En 2025, las pequeñas y medianas empresas están adoptando herramientas de **IA generativa aplicada a datos** para mejorar la toma de decisiones.
 Sin embargo, la mayoría **no dispone de personal técnico** capaz de programar consultas o interpretar dashboards complejos.
 
 **DataPulse AI** nace como una iniciativa interna de una consultora de datos.
-Su objetivo: desarrollar un **asistente conversacional** que permita a los responsables de negocio **hacer preguntas en lenguaje natural sobre sus datos de ventas, clientes y productos** y obtener **respuestas con métricas calculadas**, lenguaje ejecutivo y recomendaciones accionables.
+Su objetivo: desarrollar un **asistente conversacional** que permita a los responsables de negocio **hacer preguntas en lenguaje natural sobre sus datos de ventas, clientes y productos** y obtener respuestas precisas, breves y con lenguaje ejecutivo.
 
 ---
 
@@ -21,17 +21,16 @@ Construir un **agente de análisis empresarial** que:
 
 1. Reciba consultas en lenguaje natural sobre datos (por ejemplo: "¿qué producto tuvo más crecimiento este trimestre?").
 2. Interprete la intención y clasifique el tipo de consulta.
-3. **Calcule métricas reales** a partir de datos estructurados.
-4. Devuelva una respuesta profesional y validada en formato estructurado (JSON con intención, cálculos y recomendación).
+3. Ejecute funciones o tools según la necesidad (resumen, forecast, ranking, etc.).
+4. Devuelva una respuesta profesional y validada en formato estructurado (por ejemplo JSON con título, insight y recomendación).
 
 El asistente deberá **evolucionar módulo a módulo** incorporando:
 
-* Validación y tipado + datos mock inline (Módulo 0)
-* Tools analíticas avanzadas (Módulo 1)
-* Lectura de CSV y validación de fuentes (Módulo 2)
+* Validación y tipado (Módulo 1)
+* Tools analíticas simples (Módulo 2)
 * Agentes encadenados o jerárquicos (Módulo 3)
-* Conexión a APIs reales y persistencia (Módulo 4)
-* Despliegue con Gradio / Docker (Módulo final)
+* Conexión a fuentes reales (CSV o API) (Módulo 4)
+* Persistencia y despliegue con Gradio / Docker (Módulo final)
 
 ---
 
@@ -39,64 +38,36 @@ El asistente deberá **evolucionar módulo a módulo** incorporando:
 
 ### 📘 Enunciado del ejercicio
 
-Como punto de partida, queremos crear un **prototipo funcional** del agente DataPulse AI que:
+Como punto de partida, queremos crear un **prototipo básico** del agente DataPulse AI que:
 
 1. **Reciba un mensaje de usuario** (consulta informal sobre datos de negocio).
 2. **Clasifique la intención** del mensaje en una de tres categorías:
    * `"resumen"` – el usuario pide un resumen o interpretación general.
    * `"comparativa"` – el usuario compara períodos, productos o regiones.
    * `"forecast"` – el usuario pregunta por proyecciones o tendencias futuras.
-3. **Calcule métricas reales** a partir de datos mock incluidos en el código.
-4. **Genere una respuesta ejecutiva** (2-3 frases) con:
-   - Números concretos del cálculo
-   - Insight principal
-   - Recomendación accionable
-
-### 📊 Datos mock del negocio
-
-El agente trabajará con estos datos ficticios de una PYME (inline en el código):
-
-```python
-DATOS_NEGOCIO = {
-    "ventas_mensuales": {
-        "q2_2025": [42000, 43000, 44000],  # abril, mayo, junio
-        "q3_2025": [45000, 48000, 52000],  # julio, agosto, septiembre
-    },
-    "productos": {
-        "Premium": {"q2": 18000, "q3": 24000},
-        "Standard": {"q2": 20000, "q3": 21000},
-        "Básico": {"q2": 6000, "q3": 7000},
-    }
-}
-```
+3. **Calcule métricas relevantes** (totales, crecimientos, rankings) y las almacene estructuradamente.
+4. **Genere una respuesta ejecutiva breve (2-3 frases, máximo 280 caracteres)** con tono profesional.
 
 ### 💡 Ejemplo de uso
-
-**Input:**
 ```python
-"¿Cómo van las ventas del último trimestre comparadas con el anterior?"
-```
-
-**Output esperado:**
-```json
+>>> "¿Cómo van las ventas del último trimestre comparadas con el anterior?"
 {
   "intencion": "comparativa",
   "datos_calculados": {
-    "q2_total": 129000,
-    "q3_total": 145000,
-    "crecimiento_pct": 12.4,
-    "top_producto": "Premium"
+    "total_q2": 129000,
+    "total_q3": 145000,
+    "crecimiento_pct": 12.4
   },
-  "respuesta": "Las ventas Q3 crecieron un 12.4% respecto a Q2 (145k€ vs 129k€), impulsadas por la línea Premium (+33%). Se recomienda ampliar inventario Premium y analizar punto de equilibrio para Standard."
+  "respuesta": "Q3 facturó 145k€ (+12.4% vs Q2). Premium lideró el crecimiento. Recomendación: mantener estrategia de precios premium."
 }
 ```
 
 ### 🧠 Conceptos que se ponen en práctica
 
-* Definición de agente con `Model(..., provider=Provider(...))`
-* Validación estructurada de salida (`BaseModel`)
-* **Paso de contexto** al agente mediante instrucciones con datos
-* Instrucciones claras para cálculo y tono profesional
+* Definición de agente básico con `Model(..., provider=Provider(...))`
+* Validación estructurada con `BaseModel` y `Field()` constraints
+* Instrucciones claras con ejemplos inline
+* Gestión de reintentos con `retries`
 * Ejecución con `uv run python caso_uso_01.py`
 
 ---
@@ -105,113 +76,77 @@ DATOS_NEGOCIO = {
 
 Crea un script llamado `00-introduccion/caso_uso_01.py` que:
 
-### 1. Defina los datos mock
+### 1. Define el modelo de salida estructurada
 
+Crea una clase `BusinessResponse` con tres campos:
+- **`intencion`**: clasificación del tipo de consulta usando `Literal["resumen", "comparativa", "forecast"]`
+- **`datos_calculados`**: diccionario flexible que almacene métricas relevantes (totales, porcentajes, rankings)
+- **`respuesta`**: texto ejecutivo con **máximo 280 caracteres**
+
+💡 Usa `Field()` de Pydantic para añadir constraints de validación (especialmente `max_length` en `respuesta`).
+
+### 2. Configura el agente con el patrón correcto
+
+Usa OpenAI (gpt-5-mini) o Anthropic siguiendo el patrón explícito:
 ```python
-DATOS_NEGOCIO = {
-    "ventas_mensuales": {
-        "q2_2025": [42000, 43000, 44000],
-        "q3_2025": [45000, 48000, 52000],
-    },
-    "productos": {
-        "Premium": {"q2": 18000, "q3": 24000},
-        "Standard": {"q2": 20000, "q3": 21000},
-        "Básico": {"q2": 6000, "q3": 7000},
-    }
-}
-```
-
-### 2. Defina el modelo de salida
-
-```python
-from pydantic import BaseModel, Field
-from typing import Literal
-
-class BusinessResponse(BaseModel):
-    intencion: Literal["resumen", "comparativa", "forecast"]
-    datos_calculados: dict = Field(
-        description="Métricas calculadas (totales, porcentajes, top items)"
-    )
-    respuesta: str = Field(
-        max_length=300,
-        description="Respuesta ejecutiva con números, insight y recomendación"
-    )
-```
-
-### 3. Configure el agente con instrucciones enriquecidas
-
-```python
-from pydantic_ai import Agent
-from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai.providers.openai import OpenAIProvider
-from config import settings
-
-model = OpenAIChatModel(
-    "gpt-5-mini",
-    provider=OpenAIProvider(api_key=settings.openai_api_key)
-)
-
-# Construir contexto con datos
-contexto_datos = f"""
-Datos disponibles del negocio:
-
-Ventas trimestrales:
-- Q2 2025: {DATOS_NEGOCIO['ventas_mensuales']['q2_2025']} (total: {sum(DATOS_NEGOCIO['ventas_mensuales']['q2_2025'])}€)
-- Q3 2025: {DATOS_NEGOCIO['ventas_mensuales']['q3_2025']} (total: {sum(DATOS_NEGOCIO['ventas_mensuales']['q3_2025'])}€)
-
-Productos (ventas por trimestre):
-- Premium: Q2={DATOS_NEGOCIO['productos']['Premium']['q2']}€, Q3={DATOS_NEGOCIO['productos']['Premium']['q3']}€
-- Standard: Q2={DATOS_NEGOCIO['productos']['Standard']['q2']}€, Q3={DATOS_NEGOCIO['productos']['Standard']['q3']}€
-- Básico: Q2={DATOS_NEGOCIO['productos']['Básico']['q2']}€, Q3={DATOS_NEGOCIO['productos']['Básico']['q3']}€
-"""
-
+model = Model("gpt-5-mini", provider=Provider(api_key=settings.openai_api_key))
 agent = Agent(
-    model,
+    model, 
     output_type=BusinessResponse,
-    instructions=f"""
-Eres un asistente ejecutivo de análisis de datos empresariales.
-
-{contexto_datos}
-
-Instrucciones:
-1. Clasifica la intención de la pregunta (resumen/comparativa/forecast)
-2. Calcula métricas relevantes usando los datos disponibles:
-   - Totales, porcentajes de crecimiento/caída
-   - Identifica productos top
-   - Compara períodos cuando sea relevante
-3. Genera una respuesta profesional que:
-   - Incluya números concretos del cálculo
-   - Destaque el insight principal
-   - Ofrezca una recomendación accionable
-   - Máximo 2-3 frases, lenguaje ejecutivo
-4. Incluye todos los cálculos en 'datos_calculados'
-"""
+    retries=2,  # Importante: permite reintentos si falla validación
+    instructions="..."
 )
 ```
 
-### 4. Ejecute pruebas con tres consultas
+### 3. Proporciona datos de negocio en las instrucciones
 
-```python
-consultas = [
-    "Resúmeme las ventas del último trimestre.",
-    "¿Qué producto creció más este trimestre comparado con el anterior?",
-    "¿Qué esperas para el próximo mes basándote en la tendencia?"
-]
+Incluye estos datos **directamente en el prompt** (inline):
+- Ventas Q2 2025: [42k, 43k, 44k] mensuales
+- Ventas Q3 2025: [45k, 48k, 52k] mensuales
+- Productos Q2→Q3: Premium (18k→24k), Estándar (20k→21k), Básico (6k→7k)
 
-for consulta in consultas:
-    print(f"\n{'='*60}")
-    print(f"Consulta: {consulta}")
-    print('='*60)
-    
-    result = agent.run_sync(consulta)
-    
-    print(f"\nIntención: {result.output.intencion}")
-    print(f"\nDatos calculados:")
-    for k, v in result.output.datos_calculados.items():
-        print(f"  {k}: {v}")
-    print(f"\nRespuesta:")
-    print(f"  {result.output.respuesta}")
-```
+**Importante**: NO calcules porcentajes manualmente. Deja que el agente haga los cálculos.
+
+### 4. Escribe instrucciones claras y específicas
+
+Tus instrucciones deben:
+- Especificar las tres tareas: clasificar, calcular, responder
+- Incluir límites explícitos (280 caracteres máximo)
+- Proporcionar un **ejemplo válido** del formato esperado
+- Usar lenguaje directo y ejecutivo
+
+### 5. Ejecuta pruebas con tres consultas
+
+Implementa una función que ejecute estas tres consultas:
+- "Resúmeme las ventas del último trimestre"
+- "¿Qué producto creció más este trimestre comparado con el anterior?"
+- "¿Qué esperas para el próximo mes basándote en las tendencias actuales?"
+
+Imprime los resultados mostrando:
+- ✓ Intención detectada
+- ✓ Datos calculados (si los hay)
+- ✓ Respuesta ejecutiva con longitud
+
+---
+
+## 💡 Consejos técnicos
+
+### Sobre validación
+- **Longitud de respuesta**: `max_length=280` es el límite de un tweet extendido - referencia familiar y profesional
+- **Reintentos**: `retries=2` da dos oportunidades al modelo si genera respuestas demasiado largas en el primer intento
+
+### Sobre las instrucciones
+- **Datos inline**: Incluye los datos directamente en el texto de las instrucciones, no como variables Python
+- **Ejemplo concreto**: Muestra exactamente el formato que esperas (estructura y longitud)
+- **Límites explícitos**: Di "MÁXIMO 280 caracteres" en mayúsculas para enfatizar
+
+### Sobre los cálculos
+- **Deja calcular al LLM**: No precalcules porcentajes. Los modelos modernos pueden hacer aritmética simple
+- **Esto es más realista**: En producción recibirás datos en bruto desde bases de datos o APIs
+
+### Manejo de errores
+- Envuelve la ejecución en `try/except` para capturar errores de validación
+- Muestra mensajes informativos que ayuden a diagnosticar problemas
 
 ---
 
@@ -219,152 +154,58 @@ for consulta in consultas:
 
 | Aspecto | Descripción | Peso |
 |---------|-------------|------|
-| 💬 Claridad del prompt | Las instrucciones incluyen datos contextuales y son precisas | 20% |
-| 🧱 Uso correcto del modelo y provider | Se usa el patrón `Model(..., provider=Provider(...))` | 15% |
-| ✅ Validación del output | La respuesta cumple el modelo `BusinessResponse` con todos los campos | 20% |
-| 🔢 Cálculos reales | Los `datos_calculados` contienen métricas correctas (no inventadas) | 25% |
-| 🧠 Relevancia empresarial | La respuesta suena realista, profesional y accionable | 15% |
-| 🧩 Legibilidad del código | Código limpio, con comentarios útiles, fácil de mantener | 5% |
-
----
-
-## ✅ Criterios de aceptación
-
-**El ejercicio está completo cuando:**
-
-1. ✅ El agente clasifica correctamente la intención (resumen/comparativa/forecast)
-2. ✅ Los `datos_calculados` contienen métricas reales calculadas de los datos mock
-3. ✅ La respuesta incluye números concretos del cálculo (no genéricos)
-4. ✅ El crecimiento de Premium es correcto: `(24000-18000)/18000 = 33.3%`
-5. ✅ El crecimiento Q3 vs Q2 es correcto: `(145000-129000)/129000 = 12.4%`
-6. ✅ La respuesta tiene tono ejecutivo (2-3 frases máximo)
-7. ✅ Incluye una recomendación accionable
-
----
-
-## 🎓 Ejemplo completo de salida esperada
-
-### Consulta 1: "Resúmeme las ventas del último trimestre"
-
-```json
-{
-  "intencion": "resumen",
-  "datos_calculados": {
-    "q3_total": 145000,
-    "promedio_mensual": 48333,
-    "mes_pico": "septiembre",
-    "valor_pico": 52000
-  },
-  "respuesta": "Q3 cerró con 145k€ en ventas, con pico en septiembre (52k€). Tendencia alcista sostenida (+7% mensual promedio). Recomendación: replicar acciones de septiembre en Q4."
-}
-```
-
-### Consulta 2: "¿Qué producto creció más?"
-
-```json
-{
-  "intencion": "comparativa",
-  "datos_calculados": {
-    "premium_crecimiento_pct": 33.3,
-    "standard_crecimiento_pct": 5.0,
-    "basico_crecimiento_pct": 16.7,
-    "top_producto": "Premium"
-  },
-  "respuesta": "Premium lidera con +33% de crecimiento Q3 vs Q2 (24k€ vs 18k€), seguido de Básico (+17%). Standard se estancó (+5%). Priorizar marketing en Premium y revisar estrategia de Standard."
-}
-```
-
-### Consulta 3: "¿Qué esperas para el próximo mes?"
-
-```json
-{
-  "intencion": "forecast",
-  "datos_calculados": {
-    "tendencia_q3": [45000, 48000, 52000],
-    "crecimiento_promedio_mensual_pct": 7.5,
-    "proyeccion_octubre": 56000
-  },
-  "respuesta": "Basado en tendencia Q3 (+7.5% mensual), octubre proyecta ~56k€. Si la estacionalidad se mantiene, Q4 podría superar 170k€. Validar con stock y capacidad operativa."
-}
-```
+| 💬 Claridad del prompt | Las instrucciones del agente son precisas, concisas y con ejemplo | 15% |
+| 🧱 Uso correcto del modelo y provider | Se usa el patrón `Model(..., provider=Provider(...))` correctamente | 15% |
+| ✅ Validación del output | La respuesta cumple el modelo `BusinessResponse` con todos los constraints | 25% |
+| 📊 Datos calculados | El campo `datos_calculados` contiene métricas relevantes y correctas | 15% |
+| 🧠 Relevancia empresarial | La respuesta suena realista, profesional y accionable | 20% |
+| 🧩 Legibilidad del código | Código limpio, bien estructurado, con comentarios útiles | 10% |
 
 ---
 
 ## 🚀 Próximos pasos
 
-El asistente deberá **evolucionar módulo a módulo** incorporando:
+### En el Módulo 1 evolucionarás este agente para:
+- Implementar **tools personalizadas** para cálculos complejos (garantizando precisión y trazabilidad)
+- Añadir **validadores custom** de Pydantic para reglas de negocio específicas
+- Usar **reflection** para que el agente autocorrija respuestas incoherentes o inconsistentes
 
-| Módulo | Evolución de DataPulse AI |
-|--------|---------------------------|
-| **0. Introducción** | Validación básica + datos mock inline + cálculos simples |
-| **1. Agentes básicos** | Tools analíticas + validación estricta + reflection |
-| **2. Contexto y validación** | Lectura CSV + gestión de contexto + conversación multi-turno |
-| **3. Integración con LLMs** | Conexión a APIs reales + despliegue + observabilidad |
+### En el Módulo 2 aprenderás a:
+- Gestionar **contexto conversacional** y memoria del agente entre múltiples interacciones
+- Conectar con **fuentes de datos reales** (archivos CSV, bases de datos SQL, APIs REST)
+- Implementar **streaming** para respuestas progresivas en interfaces de usuario
 
----
+### En el Módulo 3 construirás:
+- **Agentes jerárquicos** que delegan subtareas a agentes especializados
+- **Workflows complejos** con encadenamiento de múltiples agentes
+- **Integración con herramientas** externas (búsqueda web, generación de gráficos)
 
-### **Módulo 1 – Agentes básicos**
-Evolucionarás este agente para:
-- Implementar **tools** que calculen KPIs automáticamente (`@agent.tool`)
-- Añadir validación estricta de rangos de fechas y valores
-- Implementar **reflection**: el agente valida sus propios cálculos
-- Manejar errores cuando faltan datos o hay inconsistencias
-
-**Ejemplo de tool:**
-```python
-@agent.tool
-def calcular_crecimiento(ctx: RunContext[None], periodo_actual: list[float], periodo_anterior: list[float]) -> dict:
-    """Calcula crecimiento porcentual entre dos períodos"""
-    total_actual = sum(periodo_actual)
-    total_anterior = sum(periodo_anterior)
-    pct = ((total_actual - total_anterior) / total_anterior) * 100
-    return {"anterior": total_anterior, "actual": total_actual, "crecimiento_pct": round(pct, 2)}
-```
+### En el Módulo final desplegarás:
+- Interfaz web con **Gradio** o **Streamlit**
+- **Containerización** con Docker para portabilidad
+- **Monitoreo** con Pydantic Logfire para observabilidad en producción
 
 ---
 
-### **Módulo 2 – Contexto y validación**
-- Reemplazar datos mock por **lectura de CSV** con validación Pydantic
-- Implementar **gestión de contexto**: el agente recuerda consultas previas
-- Permitir **conversación multi-turno** (historial de mensajes)
-- Validar estructura y calidad de archivos de datos
+## 📚 Conceptos clave aprendidos
 
-**Ejemplo de contexto:**
-```python
-# El usuario puede hacer seguimiento:
-# Usuario: "¿Qué producto creció más en Q3?"
-# Agente: "Premium con +33%"
-# Usuario: "¿Y cuánto vendió en total?" ← El agente recuerda que hablamos de Premium
-# Agente: "Premium vendió 24k€ en Q3"
-```
+Al completar esta etapa habrás practicado:
+
+✅ **Arquitectura básica** de un agente con PydanticAI  
+✅ **Validación estructurada** con Pydantic (tipos, constraints, defaults)  
+✅ **Patrón Model + Provider** para configuración explícita de LLMs  
+✅ **Prompt engineering** efectivo (claridad, ejemplos, límites)  
+✅ **Manejo de errores** de validación con reintentos  
+✅ **Output profesional** adaptado a audiencia ejecutiva  
+
+Estos fundamentos son la base sobre la que construirás agentes cada vez más sofisticados en los siguientes módulos.
 
 ---
 
-### **Módulo 3 – Integración con LLMs**
-- Conectar con **APIs reales** (Google Sheets, bases de datos, CRMs)
-- Implementar **agentes especializados** (agente de ventas, agente de productos, agente forecast)
-- Crear **agente coordinador** que delega a especialistas según la consulta
-- **Desplegar** con Gradio o FastAPI
-- Añadir **observabilidad** con Logfire para monitorear tokens y performance
-
-**Arquitectura final:**
-```
-Usuario → Agente Coordinador → [Agente Ventas | Agente Productos | Agente Forecast]
-                              ↓
-                         Google Sheets / PostgreSQL
-                              ↓
-                         Logfire (observabilidad)
-```
-
----
-
-## 💡 Tips para el éxito
-
-1. **Primero resuelve en Python puro**: Calcula las métricas manualmente antes de pedírselo al LLM
-2. **Sé específico en las instrucciones**: "Calcula crecimiento con fórmula (nuevo-viejo)/viejo*100"
-3. **Valida las respuestas**: Revisa que los números sean coherentes
-4. **Itera el prompt**: Si el agente inventa datos, hazlo más explícito sobre usar solo los datos proporcionados
-
----
-
-**¿Listo para empezar?** Crea tu archivo `caso_uso_01.py` y valida que puedes calcular métricas reales. ¡El resto del curso construye sobre esta base!
+<div style="text-align:center; margin-top:40px; font-size:0.9em; color:#64748b;">
+  💡 <strong>Consejo pedagógico</strong>: Si tu agente genera respuestas demasiado largas, revisa que:
+  <br>1. El campo <code>respuesta</code> tenga <code>max_length=280</code>
+  <br>2. Las instrucciones mencionen explícitamente el límite de 280 caracteres
+  <br>3. Hayas configurado <code>retries=2</code> para dar oportunidades de corrección
+  <br>4. Incluyas un ejemplo concreto del formato esperado
+</div>
