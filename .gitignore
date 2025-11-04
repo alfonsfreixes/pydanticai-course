@@ -12,3 +12,6 @@ _build/
 
 # VS Code
 .vscode/
+
+# Otros
+git-flujo.md
