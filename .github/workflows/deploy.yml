@@ -18,18 +18,24 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install JupyterBook
-        run: pip install jupyter-book
-
-      - name: Clean and build
+      - name: Install dependencies
         run: |
-          jupyter-book clean . --all
-          jupyter-book build . --verbose
+          python -m pip install --upgrade pip
+          python -m pip install "jupyter-book==1.0.4.post1"
 
-      - name: Verify build
+      - name: Clean book
+        run: python -m jupyter_book.cli.main clean . --all
+
+      - name: Build book
+        run: python -m jupyter_book.cli.main build .
+
+      - name: List build output
         run: |
-          ls -la _build/html/
-          test -f _build/html/index.html && echo "✅ Build OK" || exit 1
+          echo "📁 Contenido de _build/html:"
+          ls -la _build/html/ || echo "❌ Carpeta _build/html no existe"
+          echo ""
+          echo "¿Existe index.html?"
+          test -f _build/html/index.html && echo "✅ Sí" || echo "❌ No"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -37,3 +43,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_build/html
           force_orphan: true
+          enable_jekyll: false
