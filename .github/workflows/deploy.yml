@@ -3,7 +3,7 @@ name: Deploy JupyterBook
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # ← Añade esto para poder ejecutar manualmente
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,34 +12,22 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install "jupyter-book==1.0.4.post1"
+      - name: Install JupyterBook
+        run: pip install jupyter-book
 
       - name: Build book
-        run: python -m jupyter_book.cli.main build .
+        run: jupyter-book build .
 
-      # ← AÑADE ESTE PASO NUEVO
-      - name: List build output
-        run: |
-          echo "📁 Contenido de _build/html:"
-          ls -la _build/html/ || echo "❌ Carpeta _build/html no existe"
-          echo ""
-          echo "¿Existe index.html?"
-          test -f _build/html/index.html && echo "✅ Sí" || echo "❌ No"
-
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/html
-          publish_branch: gh-pages
-          force_orphan: true
-          enable_jekyll: false
+          publish_dir: ./_build/html
