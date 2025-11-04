@@ -12,22 +12,28 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install JupyterBook
         run: pip install jupyter-book
 
-      - name: Build book
-        run: jupyter-book build .
+      - name: Clean and build
+        run: |
+          jupyter-book clean . --all
+          jupyter-book build . --verbose
+
+      - name: Verify build
+        run: |
+          ls -la _build/html/
+          test -f _build/html/index.html && echo "✅ Build OK" || exit 1
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_build/html
+          force_orphan: true
