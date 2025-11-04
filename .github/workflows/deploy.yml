@@ -22,7 +22,7 @@ jobs:
         run: python -m pip install -U pip jupyter-book
 
       - name: Build book
-        run: jb build .
+        run: python -m jupyter_book.cli.main build .
 
       # ← AÑADE ESTE PASO NUEVO
       - name: List build output
