@@ -24,10 +24,10 @@ jobs:
           python -m pip install "jupyter-book==1.0.4.post1"
 
       - name: Clean book
-        run: python -m jupyter_book.cli.main clean . --all
+        run: jupyter-book clean . --all
 
       - name: Build book
-        run: python -m jupyter_book.cli.main build .
+        run: jupyter-book build .
 
       - name: List build output
         run: |
