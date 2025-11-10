@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>🧭 Caso de uso empresarial: DataPulse AI – Asistente de análisis de datos para PYMEs &#8212; Curso PydanticAI desde cero</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '00-introduccion/00_proyecto';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DataPulse AI - Solución Propuesta (Módulo 0)" href="00_proyecto_solucion.html" />
+    <link rel="prev" title="Módulo 0 · Introducción a PydanticAI" href="README.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt="Curso PydanticAI desde cero - Home"/>
+    <script>document.write(`<img src="../_static/logo.svg" class="logo__image only-dark" alt="Curso PydanticAI desde cero - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="README.html">Módulo 0 · Introducción a PydanticAI</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">🧭 Caso de uso empresarial: <strong>DataPulse AI – Asistente de análisis de datos para PYMEs</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_proyecto_solucion.html">DataPulse AI - Solución Propuesta (Módulo 0)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../01-agentes-basicos/README.html">Módulo 1 · Agentes Avanzados</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../01-agentes-basicos/01_proyecto.html">Proyecto</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../02-contexto-y-validacion/README.html">Módulo 2 · Contexto y validación</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../02-contexto-y-validacion/validacion.html">Validación y contexto</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../03-integracion-con-llms/README.html">Módulo 3 · Integración con LLMs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../03-integracion-con-llms/integracion_llms.html">Integración con modelos LLM</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/00-introduccion/00_proyecto.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>🧭 Caso de uso empresarial: DataPulse AI – Asistente de análisis de datos para PYMEs</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contexto">🧩 Contexto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objetivo-general-del-proyecto">🎯 Objetivo general del proyecto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#etapa-1-modulo-0-introduccion">🪜 Etapa 1 – Módulo 0 · Introducción</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enunciado-del-ejercicio">📘 Enunciado del ejercicio</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ejemplo-de-uso">💡 Ejemplo de uso</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conceptos-que-se-ponen-en-practica">🧠 Conceptos que se ponen en práctica</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tu-tarea">🧑‍💻 Tu tarea</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-el-modelo-de-salida-estructurada">1. Define el modelo de salida estructurada</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configura-el-agente-con-el-patron-correcto">2. Configura el agente con el patrón correcto</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proporciona-datos-de-negocio-en-las-instrucciones">3. Proporciona datos de negocio en las instrucciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#escribe-instrucciones-claras-y-especificas">4. Escribe instrucciones claras y específicas</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ejecuta-pruebas-con-tres-consultas">5. Ejecuta pruebas con tres consultas</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consejos-tecnicos">💡 Consejos técnicos</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sobre-validacion">Sobre validación</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sobre-las-instrucciones">Sobre las instrucciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sobre-los-calculos">Sobre los cálculos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manejo-de-errores">Manejo de errores</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-evaluaremos-en-esta-etapa">📈 Qué evaluaremos en esta etapa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">🚀 Próximos pasos</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-1-evolucionaras-este-agente-para">En el Módulo 1 evolucionarás este agente para:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-2-aprenderas-a">En el Módulo 2 aprenderás a:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-3-construiras">En el Módulo 3 construirás:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-final-desplegaras">En el Módulo final desplegarás:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conceptos-clave-aprendidos">📚 Conceptos clave aprendidos</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="caso-de-uso-empresarial-datapulse-ai-asistente-de-analisis-de-datos-para-pymes">
+<h1>🧭 Caso de uso empresarial: <strong>DataPulse AI – Asistente de análisis de datos para PYMEs</strong><a class="headerlink" href="#caso-de-uso-empresarial-datapulse-ai-asistente-de-analisis-de-datos-para-pymes" title="Link to this heading">#</a></h1>
+<blockquote>
+<div><p><strong>Mini-proyecto transversal del curso PydanticAI</strong>
+A lo largo del curso, construirás paso a paso un agente inteligente que ayuda a empresas a entender y resumir sus datos internos de negocio.</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="contexto">
+<h2>🧩 Contexto<a class="headerlink" href="#contexto" title="Link to this heading">#</a></h2>
+<p>En 2025, las pequeñas y medianas empresas están adoptando herramientas de <strong>IA generativa aplicada a datos</strong> para mejorar la toma de decisiones.
+Sin embargo, la mayoría <strong>no dispone de personal técnico</strong> capaz de programar consultas o interpretar dashboards complejos.</p>
+<p><strong>DataPulse AI</strong> nace como una iniciativa interna de una consultora de datos.
+Su objetivo: desarrollar un <strong>asistente conversacional</strong> que permita a los responsables de negocio <strong>hacer preguntas en lenguaje natural sobre sus datos de ventas, clientes y productos</strong> y obtener respuestas precisas, breves y con lenguaje ejecutivo.</p>
+</section>
+<hr class="docutils" />
+<section id="objetivo-general-del-proyecto">
+<h2>🎯 Objetivo general del proyecto<a class="headerlink" href="#objetivo-general-del-proyecto" title="Link to this heading">#</a></h2>
+<p>Construir un <strong>agente de análisis empresarial</strong> que:</p>
+<ol class="arabic simple">
+<li><p>Reciba consultas en lenguaje natural sobre datos (por ejemplo: “¿qué producto tuvo más crecimiento este trimestre?”).</p></li>
+<li><p>Interprete la intención y clasifique el tipo de consulta.</p></li>
+<li><p>Ejecute funciones o tools según la necesidad (resumen, forecast, ranking, etc.).</p></li>
+<li><p>Devuelva una respuesta profesional y validada en formato estructurado (por ejemplo JSON con título, insight y recomendación).</p></li>
+</ol>
+<p>El asistente deberá <strong>evolucionar módulo a módulo</strong> incorporando:</p>
+<ul class="simple">
+<li><p>Validación y tipado (Módulo 1)</p></li>
+<li><p>Tools analíticas simples (Módulo 2)</p></li>
+<li><p>Agentes encadenados o jerárquicos (Módulo 3)</p></li>
+<li><p>Conexión a fuentes reales (CSV o API) (Módulo 4)</p></li>
+<li><p>Persistencia y despliegue con Gradio / Docker (Módulo final)</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="etapa-1-modulo-0-introduccion">
+<h2>🪜 Etapa 1 – Módulo 0 · Introducción<a class="headerlink" href="#etapa-1-modulo-0-introduccion" title="Link to this heading">#</a></h2>
+<section id="enunciado-del-ejercicio">
+<h3>📘 Enunciado del ejercicio<a class="headerlink" href="#enunciado-del-ejercicio" title="Link to this heading">#</a></h3>
+<p>Como punto de partida, queremos crear un <strong>prototipo básico</strong> del agente DataPulse AI que:</p>
+<ol class="arabic simple">
+<li><p><strong>Reciba un mensaje de usuario</strong> (consulta informal sobre datos de negocio).</p></li>
+<li><p><strong>Clasifique la intención</strong> del mensaje en una de tres categorías:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;resumen&quot;</span></code> – el usuario pide un resumen o interpretación general.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;comparativa&quot;</span></code> – el usuario compara períodos, productos o regiones.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;forecast&quot;</span></code> – el usuario pregunta por proyecciones o tendencias futuras.</p></li>
+</ul>
+</li>
+<li><p><strong>Calcule métricas relevantes</strong> (totales, crecimientos, rankings) y las almacene estructuradamente.</p></li>
+<li><p><strong>Genere una respuesta ejecutiva breve (2-3 frases, máximo 280 caracteres)</strong> con tono profesional.</p></li>
+</ol>
+</section>
+<section id="ejemplo-de-uso">
+<h3>💡 Ejemplo de uso<a class="headerlink" href="#ejemplo-de-uso" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;¿Cómo van las ventas del último trimestre comparadas con el anterior?&quot;</span>
+<span class="go">{</span>
+<span class="go">  &quot;intencion&quot;: &quot;comparativa&quot;,</span>
+<span class="go">  &quot;datos_calculados&quot;: {</span>
+<span class="go">    &quot;total_q2&quot;: 129000,</span>
+<span class="go">    &quot;total_q3&quot;: 145000,</span>
+<span class="go">    &quot;crecimiento_pct&quot;: 12.4</span>
+<span class="go">  },</span>
+<span class="go">  &quot;respuesta&quot;: &quot;Q3 facturó 145k€ (+12.4% vs Q2). Premium lideró el crecimiento. Recomendación: mantener estrategia de precios premium.&quot;</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</section>
+<section id="conceptos-que-se-ponen-en-practica">
+<h3>🧠 Conceptos que se ponen en práctica<a class="headerlink" href="#conceptos-que-se-ponen-en-practica" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Definición de agente básico con <code class="docutils literal notranslate"><span class="pre">Model(...,</span> <span class="pre">provider=Provider(...))</span></code></p></li>
+<li><p>Validación estructurada con <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> y <code class="docutils literal notranslate"><span class="pre">Field()</span></code> constraints</p></li>
+<li><p>Instrucciones claras con ejemplos inline</p></li>
+<li><p>Gestión de reintentos con <code class="docutils literal notranslate"><span class="pre">retries</span></code></p></li>
+<li><p>Ejecución con <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">caso_uso_01.py</span></code></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tu-tarea">
+<h2>🧑‍💻 Tu tarea<a class="headerlink" href="#tu-tarea" title="Link to this heading">#</a></h2>
+<p>Crea un script llamado <code class="docutils literal notranslate"><span class="pre">00-introduccion/caso_uso_01.py</span></code> que:</p>
+<section id="define-el-modelo-de-salida-estructurada">
+<h3>1. Define el modelo de salida estructurada<a class="headerlink" href="#define-el-modelo-de-salida-estructurada" title="Link to this heading">#</a></h3>
+<p>Crea una clase <code class="docutils literal notranslate"><span class="pre">BusinessResponse</span></code> con tres campos:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">intencion</span></code></strong>: clasificación del tipo de consulta usando <code class="docutils literal notranslate"><span class="pre">Literal[&quot;resumen&quot;,</span> <span class="pre">&quot;comparativa&quot;,</span> <span class="pre">&quot;forecast&quot;]</span></code></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">datos_calculados</span></code></strong>: diccionario flexible que almacene métricas relevantes (totales, porcentajes, rankings)</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">respuesta</span></code></strong>: texto ejecutivo con <strong>máximo 280 caracteres</strong></p></li>
+</ul>
+<p>💡 Usa <code class="docutils literal notranslate"><span class="pre">Field()</span></code> de Pydantic para añadir constraints de validación (especialmente <code class="docutils literal notranslate"><span class="pre">max_length</span></code> en <code class="docutils literal notranslate"><span class="pre">respuesta</span></code>).</p>
+</section>
+<section id="configura-el-agente-con-el-patron-correcto">
+<h3>2. Configura el agente con el patrón correcto<a class="headerlink" href="#configura-el-agente-con-el-patron-correcto" title="Link to this heading">#</a></h3>
+<p>Usa OpenAI (gpt-5-mini) siguiendo el mismo patrón que la solución oficial:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">OpenAIChatModel</span><span class="p">(</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">,</span>
+    <span class="n">provider</span><span class="o">=</span><span class="n">OpenAIProvider</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">openai_api_key</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">output_type</span><span class="o">=</span><span class="n">BusinessResponse</span><span class="p">,</span>
+    <span class="n">retries</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># Importante: permite reintentos si falla validación</span>
+    <span class="n">instructions</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Si prefieres Anthropic, cambia la clase de modelo y provider respetando la misma estructura.</p>
+</div></blockquote>
+</section>
+<section id="proporciona-datos-de-negocio-en-las-instrucciones">
+<h3>3. Proporciona datos de negocio en las instrucciones<a class="headerlink" href="#proporciona-datos-de-negocio-en-las-instrucciones" title="Link to this heading">#</a></h3>
+<p>Incluye estos datos <strong>directamente en el prompt</strong> (inline):</p>
+<ul class="simple">
+<li><p>Ventas Q2 2025: [42k, 43k, 44k] mensuales</p></li>
+<li><p>Ventas Q3 2025: [45k, 48k, 52k] mensuales</p></li>
+<li><p>Productos Q2→Q3: Premium (18k→24k), Estándar (20k→21k), Básico (6k→7k)</p></li>
+</ul>
+<p><strong>Importante</strong>: NO calcules porcentajes manualmente. Deja que el agente haga los cálculos.</p>
+</section>
+<section id="escribe-instrucciones-claras-y-especificas">
+<h3>4. Escribe instrucciones claras y específicas<a class="headerlink" href="#escribe-instrucciones-claras-y-especificas" title="Link to this heading">#</a></h3>
+<p>Tus instrucciones deben:</p>
+<ul class="simple">
+<li><p>Especificar las tres tareas: clasificar, calcular, responder</p></li>
+<li><p>Incluir límites explícitos (280 caracteres máximo)</p></li>
+<li><p>Proporcionar un <strong>ejemplo válido</strong> del formato esperado</p></li>
+<li><p>Usar lenguaje directo y ejecutivo</p></li>
+</ul>
+</section>
+<section id="ejecuta-pruebas-con-tres-consultas">
+<h3>5. Ejecuta pruebas con tres consultas<a class="headerlink" href="#ejecuta-pruebas-con-tres-consultas" title="Link to this heading">#</a></h3>
+<p>Implementa una función que ejecute estas tres consultas:</p>
+<ul class="simple">
+<li><p>“Resúmeme las ventas del último trimestre”</p></li>
+<li><p>“¿Qué producto creció más este trimestre comparado con el anterior?”</p></li>
+<li><p>“¿Qué esperas para el próximo mes basándote en las tendencias actuales?”</p></li>
+</ul>
+<p>Imprime los resultados mostrando:</p>
+<ul class="simple">
+<li><p>✓ Intención detectada</p></li>
+<li><p>✓ Datos calculados (si los hay)</p></li>
+<li><p>✓ Respuesta ejecutiva con longitud</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="consejos-tecnicos">
+<h2>💡 Consejos técnicos<a class="headerlink" href="#consejos-tecnicos" title="Link to this heading">#</a></h2>
+<section id="sobre-validacion">
+<h3>Sobre validación<a class="headerlink" href="#sobre-validacion" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Longitud de respuesta</strong>: <code class="docutils literal notranslate"><span class="pre">max_length=280</span></code> es el límite de un tweet extendido - referencia familiar y profesional</p></li>
+<li><p><strong>Reintentos</strong>: <code class="docutils literal notranslate"><span class="pre">retries=2</span></code> da dos oportunidades al modelo si genera respuestas demasiado largas en el primer intento</p></li>
+</ul>
+</section>
+<section id="sobre-las-instrucciones">
+<h3>Sobre las instrucciones<a class="headerlink" href="#sobre-las-instrucciones" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Datos inline</strong>: Incluye los datos directamente en el texto de las instrucciones, no como variables Python</p></li>
+<li><p><strong>Ejemplo concreto</strong>: Muestra exactamente el formato que esperas (estructura y longitud)</p></li>
+<li><p><strong>Límites explícitos</strong>: Di “MÁXIMO 280 caracteres” en mayúsculas para enfatizar</p></li>
+</ul>
+</section>
+<section id="sobre-los-calculos">
+<h3>Sobre los cálculos<a class="headerlink" href="#sobre-los-calculos" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Deja calcular al LLM</strong>: No precalcules porcentajes. Los modelos modernos pueden hacer aritmética simple</p></li>
+<li><p><strong>Esto es más realista</strong>: En producción recibirás datos en bruto desde bases de datos o APIs</p></li>
+</ul>
+</section>
+<section id="manejo-de-errores">
+<h3>Manejo de errores<a class="headerlink" href="#manejo-de-errores" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Envuelve la ejecución en <code class="docutils literal notranslate"><span class="pre">try/except</span></code> para capturar errores de validación</p></li>
+<li><p>Muestra mensajes informativos que ayuden a diagnosticar problemas</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="que-evaluaremos-en-esta-etapa">
+<h2>📈 Qué evaluaremos en esta etapa<a class="headerlink" href="#que-evaluaremos-en-esta-etapa" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspecto</p></th>
+<th class="head"><p>Descripción</p></th>
+<th class="head"><p>Peso</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>💬 Claridad del prompt</p></td>
+<td><p>Las instrucciones del agente son precisas, concisas y con ejemplo</p></td>
+<td><p>15%</p></td>
+</tr>
+<tr class="row-odd"><td><p>🧱 Uso correcto del modelo y provider</p></td>
+<td><p>Se usa el patrón <code class="docutils literal notranslate"><span class="pre">Model(...,</span> <span class="pre">provider=Provider(...))</span></code> correctamente</p></td>
+<td><p>15%</p></td>
+</tr>
+<tr class="row-even"><td><p>✅ Validación del output</p></td>
+<td><p>La respuesta cumple el modelo <code class="docutils literal notranslate"><span class="pre">BusinessResponse</span></code> con todos los constraints</p></td>
+<td><p>25%</p></td>
+</tr>
+<tr class="row-odd"><td><p>📊 Datos calculados</p></td>
+<td><p>El campo <code class="docutils literal notranslate"><span class="pre">datos_calculados</span></code> contiene métricas relevantes y correctas</p></td>
+<td><p>15%</p></td>
+</tr>
+<tr class="row-even"><td><p>🧠 Relevancia empresarial</p></td>
+<td><p>La respuesta suena realista, profesional y accionable</p></td>
+<td><p>20%</p></td>
+</tr>
+<tr class="row-odd"><td><p>🧩 Legibilidad del código</p></td>
+<td><p>Código limpio, bien estructurado, con comentarios útiles</p></td>
+<td><p>10%</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="proximos-pasos">
+<h2>🚀 Próximos pasos<a class="headerlink" href="#proximos-pasos" title="Link to this heading">#</a></h2>
+<section id="en-el-modulo-1-evolucionaras-este-agente-para">
+<h3>En el Módulo 1 evolucionarás este agente para:<a class="headerlink" href="#en-el-modulo-1-evolucionaras-este-agente-para" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Implementar <strong>tools personalizadas</strong> para cálculos complejos (garantizando precisión y trazabilidad)</p></li>
+<li><p>Añadir <strong>validadores custom</strong> de Pydantic para reglas de negocio específicas</p></li>
+<li><p>Usar <strong>reflection</strong> para que el agente autocorrija respuestas incoherentes o inconsistentes</p></li>
+</ul>
+</section>
+<section id="en-el-modulo-2-aprenderas-a">
+<h3>En el Módulo 2 aprenderás a:<a class="headerlink" href="#en-el-modulo-2-aprenderas-a" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Gestionar <strong>contexto conversacional</strong> y memoria del agente entre múltiples interacciones</p></li>
+<li><p>Conectar con <strong>fuentes de datos reales</strong> (archivos CSV, bases de datos SQL, APIs REST)</p></li>
+<li><p>Implementar <strong>streaming</strong> para respuestas progresivas en interfaces de usuario</p></li>
+</ul>
+</section>
+<section id="en-el-modulo-3-construiras">
+<h3>En el Módulo 3 construirás:<a class="headerlink" href="#en-el-modulo-3-construiras" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Agentes jerárquicos</strong> que delegan subtareas a agentes especializados</p></li>
+<li><p><strong>Workflows complejos</strong> con encadenamiento de múltiples agentes</p></li>
+<li><p><strong>Integración con herramientas</strong> externas (búsqueda web, generación de gráficos)</p></li>
+</ul>
+</section>
+<section id="en-el-modulo-final-desplegaras">
+<h3>En el Módulo final desplegarás:<a class="headerlink" href="#en-el-modulo-final-desplegaras" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Interfaz web con <strong>Gradio</strong> o <strong>Streamlit</strong></p></li>
+<li><p><strong>Containerización</strong> con Docker para portabilidad</p></li>
+<li><p><strong>Monitoreo</strong> con Pydantic Logfire para observabilidad en producción</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="conceptos-clave-aprendidos">
+<h2>📚 Conceptos clave aprendidos<a class="headerlink" href="#conceptos-clave-aprendidos" title="Link to this heading">#</a></h2>
+<p>Al completar esta etapa habrás practicado:</p>
+<p>✅ <strong>Arquitectura básica</strong> de un agente con PydanticAI<br />
+✅ <strong>Validación estructurada</strong> con Pydantic (tipos, constraints, defaults)<br />
+✅ <strong>Patrón Model + Provider</strong> para configuración explícita de LLMs<br />
+✅ <strong>Prompt engineering</strong> efectivo (claridad, ejemplos, límites)<br />
+✅ <strong>Manejo de errores</strong> de validación con reintentos<br />
+✅ <strong>Output profesional</strong> adaptado a audiencia ejecutiva</p>
+<p>Estos fundamentos son la base sobre la que construirás agentes cada vez más sofisticados en los siguientes módulos.</p>
+<hr class="docutils" />
+<div style="text-align:center; margin-top:40px; font-size:0.9em; color:#64748b;">
+  💡 <strong>Consejo pedagógico</strong>: Si tu agente genera respuestas demasiado largas, revisa que:
+  <br>1. El campo <code>respuesta</code> tenga <code>max_length=280</code>
+  <br>2. Las instrucciones mencionen explícitamente el límite de 280 caracteres
+  <br>3. Hayas configurado <code>retries=2</code> para dar oportunidades de corrección
+  <br>4. Incluyas un ejemplo concreto del formato esperado
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./00-introduccion"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="README.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Módulo 0 · Introducción a PydanticAI</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="00_proyecto_solucion.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">DataPulse AI - Solución Propuesta (Módulo 0)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contexto">🧩 Contexto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objetivo-general-del-proyecto">🎯 Objetivo general del proyecto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#etapa-1-modulo-0-introduccion">🪜 Etapa 1 – Módulo 0 · Introducción</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enunciado-del-ejercicio">📘 Enunciado del ejercicio</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ejemplo-de-uso">💡 Ejemplo de uso</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conceptos-que-se-ponen-en-practica">🧠 Conceptos que se ponen en práctica</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tu-tarea">🧑‍💻 Tu tarea</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-el-modelo-de-salida-estructurada">1. Define el modelo de salida estructurada</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configura-el-agente-con-el-patron-correcto">2. Configura el agente con el patrón correcto</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proporciona-datos-de-negocio-en-las-instrucciones">3. Proporciona datos de negocio en las instrucciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#escribe-instrucciones-claras-y-especificas">4. Escribe instrucciones claras y específicas</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ejecuta-pruebas-con-tres-consultas">5. Ejecuta pruebas con tres consultas</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consejos-tecnicos">💡 Consejos técnicos</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sobre-validacion">Sobre validación</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sobre-las-instrucciones">Sobre las instrucciones</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sobre-los-calculos">Sobre los cálculos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manejo-de-errores">Manejo de errores</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-evaluaremos-en-esta-etapa">📈 Qué evaluaremos en esta etapa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">🚀 Próximos pasos</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-1-evolucionaras-este-agente-para">En el Módulo 1 evolucionarás este agente para:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-2-aprenderas-a">En el Módulo 2 aprenderás a:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-3-construiras">En el Módulo 3 construirás:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#en-el-modulo-final-desplegaras">En el Módulo final desplegarás:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conceptos-clave-aprendidos">📚 Conceptos clave aprendidos</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alfons Freixes
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
