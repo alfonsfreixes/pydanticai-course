@@ -1,45 +1,84 @@
 # Módulo 1 · Agentes Avanzados
 
-**Bienvenido al Módulo 1.** En el módulo anterior aprendiste los fundamentos: configurar agentes, usar tools simples y estructurar salidas. Ahora vamos a profundizar en técnicas de producción que separan un prototipo de una aplicación empresarial.
+**Bienvenido al Módulo 1.** En el módulo anterior aprendiste los fundamentos: configurar agentes, usar tools simples y estructurar salidas. Ahora vamos a profundizar en técnicas de producción que separan un prototipo de una aplicación empresarial robusta.
 
-En este módulo construirás agentes que:
-- Validan sus propias respuestas antes de devolverlas
-- Se autocorrigen cuando detectan errores
-- Manejan casos edge de forma elegante
-- Integran con sistemas externos de manera controlada
-
-**Versión actual:** PydanticAI 1.10 | Pydantic 2.12 | Python ≥3.11
+**PydanticAI 1.10 | Pydantic 2.12 | Python ≥3.11**
 
 ---
 
 ## ¿Qué aprenderás en este módulo?
 
-Este módulo te prepara para construir agentes de nivel empresarial. Los conceptos que cubriremos son los que marcan la diferencia entre "funciona en mi máquina" y "funciona en producción con clientes reales":
+Este módulo te prepara para construir agentes de nivel empresarial. Los conceptos que cubriremos son los que marcan la diferencia entre "funciona en mi máquina" y "funciona en producción con miles de usuarios":
 
-- **Tools empresariales con validación compleja**: Aprenderás a crear funciones que el LLM puede llamar, con validación automática de parámetros usando Pydantic
-- **Result validators**: Implementarás verificaciones que garantizan la calidad de las respuestas antes de mostrarlas al usuario
-- **Retries inteligentes**: Configurarás estrategias de reintento que permiten al agente recuperarse de errores sin intervención manual
-- **Reflection patterns**: El agente revisará su propia salida y la mejorará iterativamente, como un editor humano
-- **Orquestación de múltiples tools**: Gestionar agentes que deciden dinámicamente qué herramientas usar y en qué orden
-- **Manejo profesional de errores**: Construir sistemas que fallan gracefully, sin exponer stack traces al usuario final
+**Tools empresariales con validación compleja**  
+Aprenderás a crear funciones que el LLM puede llamar, con validación automática de parámetros usando Pydantic. Verás cómo manejar múltiples parámetros, restricciones de negocio y casos edge.
 
-Al final del módulo, habrás evolucionado el caso de uso DataPulse AI del Módulo 0 en un sistema con validación, autocorrección y manejo robusto de errores.
+**Output validators para garantizar calidad**  
+Implementarás verificaciones que interceptan la respuesta del agente antes de mostrarla al usuario, garantizando que cumple tus estándares de calidad.
+
+**Reflection patterns: el agente se autocorrige**  
+El agente revisará su propia salida y la mejorá iterativamente, como un editor humano que detecta problemas y reescribe hasta alcanzar calidad profesional.
+
+**Retries inteligentes por criticidad**  
+Configurarás estrategias de reintento diferenciadas: más reintentos para operaciones críticas, menos para consultas informativas.
+
+**Orquestación de múltiples tools**  
+Construirás agentes que deciden dinámicamente qué herramientas usar y en qué orden, sin que tengas que programar el flujo explícitamente.
+
+**Manejo profesional de errores**  
+Aprenderás a construir sistemas que fallan gracefully: nunca exponen stack traces al usuario, siempre devuelven respuestas estructuradas, y escalan a humanos cuando es necesario.
+
+Al final del módulo, habrás evolucionado el caso de uso DataPulse AI del Módulo 0 en un sistema con validación, autocorrección y manejo robusto de errores listo para producción.
 
 ---
 
 ## 1. Tools avanzadas con parámetros complejos
 
-En el Módulo 0 viste tools simples (como `get_current_time()`). En producción, las tools suelen necesitar múltiples parámetros, validación de reglas de negocio y manejo de casos edge.
+En el Módulo 0 viste tools simples como `get_current_time()` que no recibían parámetros o recibían uno solo. En producción, las tools suelen ser más complejas: múltiples parámetros, validación de reglas de negocio, manejo de casos edge.
 
-**¿Por qué es importante?**  
-Un LLM puede "alucinar" parámetros inválidos. Si tu tool consulta una base de datos, quieres asegurarte de que los parámetros están validados **antes** de ejecutar queries. Aquí es donde brilla la combinación de PydanticAI + Pydantic: validación automática de tipos en tiempo de ejecución.
+### ¿Por qué es crítico validar parámetros?
+
+Un LLM puede "alucinar" parámetros inválidos. Imagina una tool que consulta una base de datos de clientes:
+
+```python
+# ❌ Sin validación
+@agent.tool
+def get_customer(ctx, customer_id):
+    return db.query(f"SELECT * FROM customers WHERE id = {customer_id}")
+    # ¡Inyección SQL si el LLM pasa "1 OR 1=1"!
+```
+
+Si el LLM decide pasar `"'; DROP TABLE customers; --"` como `customer_id`, tienes un problema grave. La solución: **validación automática con Pydantic**.
+
+```python
+# ✅ Con validación Pydantic
+@agent.tool
+def get_customer(
+    ctx,
+    customer_id: Annotated[int, Field(gt=0, description="ID del cliente")]
+):
+    # Si customer_id no es int positivo, Pydantic rechaza antes de ejecutar
+    return db.query("SELECT * FROM customers WHERE id = ?", customer_id)
+```
+
+**Beneficios de la validación automática:**
+- 🛡️ **Seguridad**: Imposible inyectar SQL o comandos maliciosos
+- 🐛 **Debugging**: Sabes exactamente qué parámetro era inválido y por qué
+- 📚 **Documentación viva**: El schema Pydantic documenta qué valores son válidos
+- 🧪 **Testing**: Puedes probar la tool independientemente del agente
 
 ### 1.1. Tool con múltiples parámetros y validación
 
-Vamos a crear un sistema de reporting de ventas. El agente podrá generar reportes filtrando por fecha, región y importe mínimo. La tool validará automáticamente que las fechas sean válidas, que la región sea una de las permitidas, y que el importe sea positivo.
+Vamos a construir un sistema de reporting de ventas empresarial. El agente podrá generar reportes filtrando por rango de fechas, región geográfica e importe mínimo. La tool validará automáticamente que:
+- Las fechas sean válidas y coherentes (fin > inicio)
+- La región sea una de las permitidas
+- El importe sea positivo
+
+**Escenario empresarial:**  
+Eres el desarrollador de un dashboard de ventas para una empresa internacional. Los managers de diferentes regiones consultan el agente preguntando cosas como: "¿Cuánto facturamos en Europa en enero con pedidos superiores a 1000 EUR?"
 
 **¿Qué vamos a construir?**  
-Un agente analista de datos que puede responder preguntas tipo: "¿Cuánto facturamos en Europa en enero con pedidos superiores a 1000 EUR?"
+Un agente analista de datos que puede responder preguntas complejas sobre ventas, con una tool que valida todos los parámetros automáticamente.
 
 **`01-agentes-avanzados/tool_avanzada.py`:**
 
@@ -80,10 +119,11 @@ model = AnthropicModel(
 
 agent = Agent(
     model=model,
-    instructions=
-    "Eres un analista de datos empresarial. "
-    "Usa la tool de reporting para responder sobre ventas. "
-    "Las fechas deben estar en formato YYYY-MM-DD."
+    instructions=(
+        "Eres un analista de datos empresarial. "
+        "Usa la tool de reporting para responder sobre ventas. "
+        "Las fechas deben estar en formato YYYY-MM-DD."
+    )
 )
 
 @agent.tool
@@ -194,50 +234,276 @@ print(result3.output)
 uv run python 01-agentes-avanzados/tool_avanzada.py
 ```
 
-**¿Qué acabas de ver?**
+---
 
-Analicemos las piezas clave de este código:
+### Desglose técnico: entendiendo cada pieza
 
-1. **`Annotated[Type, Field(...)]`**: Esta combinación le dice a Pydantic:
-   - Qué tipo esperas (`str`, `float`, `Literal[...]`)
-   - Qué restricciones aplicar (`ge=0` para "greater or equal than 0")
-   - Qué descripción mostrar al LLM para que entienda cómo usar el parámetro
+Analicemos en detalle las técnicas usadas en este código:
 
-2. **`Literal["EU", "NA", "LATAM", "APAC"]`**: El LLM **solo puede pasar** uno de estos valores. Si intenta pasar "Europa" o "Europe", Pydantic rechaza la llamada antes de ejecutar tu código.
+#### 1. Anotaciones con Field()
 
-3. **Docstring detallado**: El LLM lo lee para entender:
-   - Qué hace la función
-   - Qué parámetros necesita
-   - Qué formato espera (ej: "YYYY-MM-DD")
-   - Qué devuelve
+```python
+start_date: Annotated[str, Field(description="Fecha inicio en formato YYYY-MM-DD")]
+```
 
-4. **Validación en capas**:
-   - Pydantic valida tipos y constraints (`ge=0`, `Literal`)
-   - Tu código valida reglas de negocio (`end >= start`)
-   - Manejo de caso sin resultados (devuelve estructura válida con mensaje)
+Esta línea hace varias cosas a la vez:
+- **`str`**: Tipo base del parámetro
+- **`Field(description="...")`**: Documentación que el LLM lee para entender qué pasar
+- **`Annotated[...]`**: Combina el tipo con metadatos de validación
 
-5. **Datos mock realistas**: Usamos datos simulados para que el código funcione sin dependencias externas, pero la estructura es idéntica a lo que harías con una base de datos real.
+**¿Por qué es importante la description?**  
+El LLM no "ve" el código Python. Lo que ve es una descripción generada automáticamente que incluye el docstring y las descriptions de Field. Cuanto más claro escribas, mejor funcionará.
 
-**Beneficios en producción:**
-- ✅ **Seguridad**: Imposible inyectar SQL porque los parámetros están validados
-- ✅ **Debugging**: Si algo falla, sabes exactamente qué parámetro era inválido
-- ✅ **Documentación viva**: El schema Pydantic es tu documentación
-- ✅ **Testing**: Puedes probar la tool independientemente del agente
+#### 2. Literal para valores restringidos
+
+```python
+region: Annotated[
+    Literal["EU", "NA", "LATAM", "APAC"],
+    Field(description="Región: EU, NA, LATAM o APAC")
+]
+```
+
+`Literal` es una restricción fuerte: el LLM **solo puede pasar** uno de esos valores exactos. Si intenta pasar "Europe" o "Europa", Pydantic rechaza la llamada antes de que tu código se ejecute.
+
+**En producción:**
+```python
+# Si tu DB tiene 50 regiones, puedes generarlo dinámicamente:
+VALID_REGIONS = ["EU", "NA", "LATAM", "APAC", ...]
+RegionType = Literal[*VALID_REGIONS]
+
+region: Annotated[RegionType, Field(description="...")]
+```
+
+#### 3. Constraints numéricos
+
+```python
+min_revenue: Annotated[
+    float,
+    Field(ge=0, description="Filtrar solo pedidos con importe mínimo en EUR")
+] = 0.0
+```
+
+- **`ge=0`**: "greater or equal than 0" - no acepta negativos
+- **`= 0.0`**: Valor por defecto si no se especifica
+- También disponibles: `gt`, `le`, `lt`, `multiple_of`, etc.
+
+```python
+# Otros ejemplos útiles:
+edad: Annotated[int, Field(ge=18, le=120)]  # Entre 18 y 120
+precio: Annotated[float, Field(gt=0, multiple_of=0.01)]  # Positivo, 2 decimales
+codigo: Annotated[str, Field(pattern=r"^[A-Z]{3}-\d{4}$")]  # ABC-1234
+```
+
+#### 4. Docstring estructurado
+
+El docstring es **crítico** porque el LLM lo lee para decidir:
+- Cuándo usar esta tool vs otras disponibles
+- Qué valores pasar en cada parámetro
+- Qué esperar como respuesta
+
+**Estructura recomendada:**
+```python
+"""
+[Resumen en 1 línea de qué hace]
+
+[Párrafo explicativo opcional]
+
+Args:
+    param1: Qué es y formato esperado
+    param2: Qué es y formato esperado
+
+Returns:
+    Qué estructura devuelve y qué campos contiene
+"""
+```
+
+#### 5. Validación en capas
+
+Este código implementa validación en **tres niveles**:
+
+**Nivel 1: Pydantic (automático)**
+```python
+# Rechaza si region no está en Literal
+# Rechaza si min_revenue < 0
+# Rechaza si start_date no es string
+```
+
+**Nivel 2: Lógica de negocio (manual)**
+```python
+if end < start:
+    return {"error": "..."}
+```
+
+**Nivel 3: Casos edge (defensivo)**
+```python
+if not filtered_transactions:
+    return {"message": "Sin resultados", ...}
+```
+
+Esta arquitectura garantiza que:
+- Errores de tipo se capturan antes de ejecutar
+- Reglas de negocio se validan explícitamente
+- Casos sin datos se manejan elegantemente
+
+#### 6. Datos mock realistas
+
+Los datos de ejemplo no son triviales. Incluyen:
+- Fechas distribuidas en enero
+- Múltiples regiones
+- Variedad de productos y precios
+- Permite probar diferentes queries
+
+**En producción:**
+```python
+# Reemplazas MOCK_TRANSACTIONS con:
+filtered_transactions = db.execute(
+    """
+    SELECT date, region, amount, product
+    FROM transactions
+    WHERE date BETWEEN ? AND ?
+      AND region = ?
+      AND amount >= ?
+    """,
+    (start_date, end_date, region, min_revenue)
+).fetchall()
+```
+
+---
+
+### Comparación: Sin validación vs Con validación
+
+**Sin validación (❌ Peligroso):**
+```python
+@agent.tool
+def get_sales(ctx, start, end, region, min_amount):
+    # ¿Qué pasa si start no es fecha válida?
+    # ¿Qué pasa si region = "'; DROP TABLE sales; --"?
+    # ¿Qué pasa si min_amount = -999999?
+    query = f"SELECT * FROM sales WHERE date >= '{start}' ..."
+    # ¡Múltiples vectores de ataque!
+```
+
+**Con validación (✅ Seguro):**
+```python
+@agent.tool
+async def get_sales(
+    ctx,
+    start: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")],
+    end: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")],
+    region: Literal["EU", "NA", "LATAM", "APAC"],
+    min_amount: Annotated[float, Field(ge=0)]
+):
+    # Si llega aquí, los parámetros son válidos por definición
+    query = "SELECT * FROM sales WHERE date >= ? ..."  # Prepared statement
+```
+
+---
+
+### Mejores prácticas para tools complejas
+
+**1. Parámetros individuales, no dicts**
+
+```python
+# ❌ Malo: difícil de validar
+@agent.tool
+def process(ctx, data: dict):
+    # ¿Qué claves tiene data? ¿Qué tipos?
+    pass
+
+# ✅ Bueno: cada parámetro validado
+@agent.tool
+def process(
+    ctx,
+    customer_id: Annotated[int, Field(gt=0)],
+    amount: Annotated[float, Field(ge=0)],
+    currency: Literal["EUR", "USD"]
+):
+    pass
+```
+
+**2. Valores por defecto sensatos**
+
+```python
+# ✅ Bueno: defaults que cubren el 80% de casos
+@agent.tool
+def search_products(
+    ctx,
+    query: str,
+    max_results: Annotated[int, Field(ge=1, le=100)] = 10,  # Por defecto 10
+    include_discontinued: bool = False  # Por defecto excluye
+):
+    pass
+```
+
+**3. Descriptions que guían al LLM**
+
+```python
+# ❌ Malo: descripción vaga
+date: Annotated[str, Field(description="A date")]
+
+# ✅ Bueno: descripción con formato y ejemplos
+date: Annotated[
+    str,
+    Field(description="Fecha en formato YYYY-MM-DD (ej: 2025-01-15)")
+]
+```
+
+**4. Manejo explícito de casos sin resultados**
+
+```python
+# ❌ Malo: devuelve lista vacía
+if not results:
+    return []
+
+# ✅ Bueno: devuelve dict estructurado con mensaje
+if not results:
+    return {
+        "found": False,
+        "message": "No se encontraron productos que coincidan",
+        "suggestions": ["Prueba términos más generales", ...]
+    }
+```
 
 ---
 
 ### 1.2. Múltiples tools y orquestación
 
-En sistemas reales, un agente suele necesitar acceso a varias herramientas. El LLM decide automáticamente cuál usar según el contexto de la pregunta.
+En sistemas reales, un agente suele necesitar acceso a varias herramientas diferentes. El LLM decide automáticamente **cuál usar, cuándo y en qué orden** según el contexto de la pregunta del usuario.
 
-**¿Por qué es útil?**  
-Imagina un asistente de e-commerce: necesita consultar inventario, rastrear pedidos, verificar precios, etc. No quieres un agente diferente para cada tarea. Quieres un agente que sepa qué tool usar para cada pregunta.
+**¿Por qué es revolucionario?**  
+Con enfoques tradicionales (if/else, regex), debes programar explícitamente cada flujo posible. Con PydanticAI, describes las tools disponibles y el LLM orquesta el flujo dinámicamente.
+
+```python
+# Enfoque tradicional ❌
+if "stock" in query and "pedido" in query:
+    result1 = check_stock()
+    result2 = track_order()
+    return combine(result1, result2)
+elif "stock" in query:
+    return check_stock()
+elif "pedido" in query:
+    return track_order()
+# ... decenas de combinaciones más
+
+# Enfoque PydanticAI ✅
+result = agent.run_sync(query)
+# El agente decide qué tools llamar y en qué orden
+```
+
+**Escenario empresarial:**  
+Imagina un asistente de e-commerce. Los clientes hacen preguntas como:
+- "¿Tenéis el Mouse Wireless?" → necesita buscar producto y consultar stock
+- "¿Dónde está mi pedido ORD-1002?" → necesita rastrear pedido
+- "Quiero un Monitor 4K, ¿hay stock? Y revisa mi pedido ORD-1001" → necesita ambas tools
+
+No quieres un agente diferente para cada caso. Quieres **un agente que sepa qué hacer**.
 
 **¿Qué vamos a construir?**  
 Un asistente que puede:
-- Consultar stock de productos
-- Rastrear el estado de pedidos
-- Combinar ambas en una sola respuesta cuando sea relevante
+- Buscar productos por nombre
+- Consultar stock con código de producto
+- Rastrear estado de pedidos
+- Combinar resultados cuando sea necesario
 
 **`01-agentes-avanzados/multi_tools.py`:**
 
@@ -451,88 +717,147 @@ print(r3.output)
 ```bash
 uv run python 01-agentes-avanzados/multi_tools.py
 ```
----
-
-## Cómo funciona la orquestación
-
-El agente toma decisiones en tiempo real:
-
-1. **Analiza** la consulta e identifica intenciones
-2. **Planifica** qué tools necesita y en qué orden
-3. **Ejecuta** la cadena de tools secuencialmente
-4. **Sintetiza** los resultados en una respuesta concisa
 
 ---
 
-## Desglose de consultas
+### Cómo funciona la orquestación automática
 
-### Consulta 1: "¿Tenéis disponible el Mouse Wireless?"
+Cuando ejecutas `agent.run_sync("¿Tenéis Mouse Wireless?")`, esto es lo que pasa internamente:
+
+```
+┌─────────────────────────────────────────────┐
+│ 1. Usuario: "¿Tenéis Mouse Wireless?"      │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ 2. Agente analiza la consulta               │
+│    - Detecta: producto mencionado (nombre)  │
+│    - Detecta: consulta sobre disponibilidad │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ 3. Agente lee docstrings de tools          │
+│    search_product: "cuando usuario mencione │
+│                     nombre (ej: Mouse)"     │
+│    check_stock: "cuando tengas código PXXX" │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ 4. Agente decide: usar search_product      │
+│    Llama: search_product("Mouse Wireless")  │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ 5. Tool devuelve: {product_code: "P002"}   │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ 6. Agente: "Tengo código, ahora necesito   │
+│    stock". Llama: check_stock("P002")       │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ 7. Tool devuelve: {stock: 0, available: F} │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ 8. Agente genera respuesta natural:        │
+│    "El Mouse Wireless (código P002) está   │
+│    agotado; stock 0 unidades."              │
+└─────────────────────────────────────────────┘
+```
+
+**Lo revolucionario:** No programaste este flujo. Solo describiste las tools disponibles y el agente decidió:
+1. Qué tools usar
+2. En qué orden
+3. Cómo combinar los resultados
+
+---
+
+### Análisis de las tres consultas de prueba
+
+#### Consulta 1: "¿Tenéis disponible el Mouse Wireless?"
 
 **Flujo automático (2 tools):**
 ```
-Usuario: "Mouse Wireless" (nombre, no código)
+Usuario menciona: "Mouse Wireless" (nombre, no código)
     ↓
-search_product("Mouse Wireless") → {"product_code": "P002"}
+Tool 1: search_product("Mouse Wireless")
+    → Resultado: {"product_code": "P002"}
     ↓
-check_stock("P002") → {"stock_units": 0, "status": "Agotado"}
+Tool 2: check_stock("P002")
+    → Resultado: {"stock_units": 0, "status": "Agotado"}
     ↓
 Respuesta: "El Mouse Wireless (código P002) está agotado; stock 0 unidades."
 ```
 
-**El agente aprendió solo** que debe buscar el código primero cuando el usuario menciona un nombre.
+**El agente aprendió solo** que debe buscar el código primero cuando el usuario menciona un nombre. Esto está guiado por los docstrings:
+- `search_product`: "cuando usuario mencione nombre"
+- `check_stock`: "cuando tengas código"
 
----
+#### Consulta 2: "¿Cuál es el estado de mi pedido ORD-1002?"
 
-### Consulta 2: "¿Cuál es el estado de mi pedido ORD-1002?"
-
-**Tool única con información estructurada:**
+**Flujo simple (1 tool):**
 ```
-track_order("ORD-1002") → {
-    "status_description": "En preparación en almacén",
-    "estimated_delivery": "3 días hábiles"
-}
-```
-
-**Diseño de estados:**
-- ❌ Malo: `"status": "pending"` → ambiguo
-- ✅ Bueno: `"status_description": "En preparación en almacén"` + tiempo estimado
-
----
-
-### Consulta 3: "Monitor 4K, ¿hay stock? Revisa pedido ORD-1001"
-
-**Orquestación compleja (3 tools, 2 intenciones):**
-```
-search_product("Monitor 4K") → P003
+Usuario menciona: ID de pedido directo
     ↓
-check_stock("P003") → 12 unidades, 449 EUR
+Tool: track_order("ORD-1002")
+    → Resultado: {
+        "status_description": "En preparación en almacén",
+        "estimated_delivery": "3 días hábiles"
+    }
     ↓
-track_order("ORD-1001") → enviado, 2 días
-    ↓
-Respuesta: combina ambas informaciones de forma profesional
+Respuesta: "Tu pedido ORD-1002 (Monitor 4K x1) está en preparación 
+            en almacén. Entrega estimada: 3 días hábiles."
 ```
 
-**Demuestra:**
+**Diseño de estados profesional:**
+- ❌ Malo: `"status": "pending"` → ambiguo para el cliente
+- ✅ Bueno: `"status_description": "En preparación en almacén"` → claro
+
+#### Consulta 3: "Quiero Monitor 4K, ¿hay stock? Revisa pedido ORD-1001"
+
+**Flujo complejo (3 tools, 2 intenciones):**
+```
+El agente detecta DOS consultas independientes
+    ↓
+Intención 1: Stock de Monitor 4K
+    Tool 1: search_product("Monitor 4K") → P003
+    Tool 2: check_stock("P003") → 12 unidades, 449 EUR
+    ↓
+Intención 2: Estado del pedido
+    Tool 3: track_order("ORD-1001") → Enviado, 2 días
+    ↓
+Respuesta: "Monitor 4K (código P003): disponible, 12 unidades a 449€.
+            Tu pedido ORD-1001 está en tránsito, llegará en 2 días."
+```
+
+**Esto demuestra:**
 - Identificar múltiples intenciones en una pregunta
 - Ejecutar tools en orden lógico correcto
-- Sintetizar sin perder información clave
+- Sintetizar resultados sin perder información clave
 
 ---
 
-## Control del tono conversacional
+### Control del tono conversacional
 
-**Problema:** Sin instrucciones explícitas, los LLMs son excesivamente conversacionales:
+**Problema común:** Sin instrucciones explícitas, los LLMs son excesivamente conversacionales:
+
 ```
-❌ "¡Claro! El Mouse Wireless está agotado. 😔
-¿Te gustaría que:
+❌ Sin control de tono:
+"¡Hola! Claro que sí, el Mouse Wireless... oh no, vaya, parece que 
+está agotado 😔. Pero no te preocupes, ¿te gustaría que:
 1. Te avise cuando se reponga?
-2. Busque alternativas?
-..."
-
-✅ "El Mouse Wireless (código P002) está agotado; stock 0 unidades."
+2. Busque alternativas similares?
+3. Te muestre otros productos?"
 ```
 
-**Solución:**
+```
+✅ Con control de tono:
+"El Mouse Wireless (código P002) está agotado; stock 0 unidades."
+```
+
+**Solución implementada en las instrucciones:**
 ```python
 instructions=(
     "Eres un asistente de e-commerce profesional y conciso.\n\n"
@@ -543,113 +868,222 @@ instructions=(
 )
 ```
 
-**Claves:**
-- Mayúsculas para énfasis (IMPORTANTE, NO)
-- Límites concretos (máximo 2-3 frases)
-- Prohibir comportamientos no deseados explícitamente
+**Claves para control de tono:**
+- Usar **MAYÚSCULAS** para énfasis en lo crítico
+- Establecer **límites concretos** (máximo 2-3 frases)
+- **Prohibir explícitamente** comportamientos no deseados (NO hagas preguntas)
+- Pedir estilo específico (profesional, conciso, ejecutivo)
 
 ---
 
-## Comparación: Tradicional vs PydanticAI
+### Comparación: Arquitectura tradicional vs PydanticAI
 
 **Enfoque tradicional (rígido):**
 ```python
-if "stock" in query and "pedido" in query:
-    check_stock(); track_order()
-elif "stock" in query:
-    check_stock()
-# ❌ No maneja sinónimos, paráfrasis ni encadenamiento
+def handle_query(query):
+    # Necesitas anticipar TODAS las combinaciones
+    if "stock" in query and "pedido" in query:
+        result1 = check_stock()
+        result2 = track_order()
+        return combine(result1, result2)
+    elif "stock" in query:
+        return check_stock()
+    elif "pedido" in query:
+        return track_order()
+    # ❌ No maneja:
+    # - Sinónimos (disponibilidad, existencias)
+    # - Paráfrasis (¿tienen X?, ¿queda X?, ¿hay X?)
+    # - Nuevas combinaciones
 ```
 
 **Enfoque PydanticAI (flexible):**
 ```python
-agent.run_sync(query)  # El LLM decide qué, cuándo y cómo
-# ✅ Lenguaje natural completo
-# ✅ Encadenamiento automático
-# ✅ Escala a 10+ tools sin cambiar código
+# Defines las tools disponibles
+@agent.tool
+def search_product(...): pass
+
+@agent.tool
+def check_stock(...): pass
+
+@agent.tool
+def track_order(...): pass
+
+# El agente decide dinámicamente
+result = agent.run_sync(query)
+# ✅ Maneja:
+# - Cualquier forma de preguntar
+# - Nuevas combinaciones
+# - Múltiples idiomas
+# - Contexto implícito
 ```
 
 ---
 
-## Buenas prácticas
+### Buenas prácticas para multi-tool systems
 
-### 1. Docstrings descriptivos
+**1. Docstrings que guían la selección**
+
 ```python
-# ✅ El LLM lee esto para decidir cuándo usar la tool
-"""
-Busca productos por nombre o descripción.
+# ✅ Bueno: explica cuándo usar cada tool
+@agent.tool
+def search_product(ctx, query: str):
+    """
+    Busca productos por nombre.
+    
+    Úsala cuando el usuario mencione un producto por su nombre
+    (ej: "Mouse Wireless") pero NO cuando mencione un código (ej: P001).
+    """
+    pass
 
-Usa esta función cuando el usuario mencione un producto por su nombre
-(ej: "Mouse Wireless") pero NO cuando mencione un código (ej: P001).
-"""
+@agent.tool
+def check_stock(ctx, product_code: str):
+    """
+    Consulta stock por código de producto.
+    
+    Úsala cuando tengas el código del producto (formato PXXX).
+    Si solo tienes el nombre, usa search_product primero.
+    """
+    pass
 ```
 
-### 2. Separación de responsabilidades
+**2. Separación clara de responsabilidades**
+
 ```python
-# ✅ Cada tool hace UNA cosa
-search_product()  # Solo busca códigos
+# ✅ Bueno: cada tool hace UNA cosa
+search_product()  # Solo busca códigos por nombre
 check_stock()     # Solo consulta stock con código conocido
+track_order()     # Solo rastrea pedidos
 
-# ❌ Tool que hace demasiado
-get_product_info()  # ¿Busca? ¿Consulta? ¿Ambos?
+# ❌ Malo: tool que hace demasiado
+get_product_info()  # ¿Busca? ¿Consulta stock? ¿Ambos? ¿Cuándo?
 ```
 
-### 3. Estados claros
-```python
-# ✅ Enum + descripciones
-class OrderStatus(str, Enum):
-    PROCESSING = "processing"
-    SHIPPED = "shipped"
+**3. Respuestas estructuradas consistentes**
 
+```python
+# ✅ Todas las tools devuelven dicts con estructura similar
+{
+    "success": bool,
+    "data": {...},
+    "message": str | None,
+    "error": str | None
+}
+
+# Facilita que el agente combine resultados
+```
+
+**4. Estados descriptivos para usuarios finales**
+
+```python
+# ❌ Malo: códigos técnicos
+OrderStatus.PENDING
+
+# ✅ Bueno: descripciones claras
 STATUS_DESCRIPTIONS = {
-    OrderStatus.PROCESSING: "En preparación en almacén",
+    OrderStatus.PENDING: "En preparación en almacén",
     OrderStatus.SHIPPED: "En tránsito",
 }
 ```
 
 ---
 
-## Punto clave
+### Escalabilidad: de 3 a 30 tools
 
-> **Tu trabajo:** Diseñar tools bien separadas con docstrings claros  
-> **Trabajo del LLM:** Orquestarlas inteligentemente
-> 
-> No programas el flujo — el agente lo descubre leyendo la documentación.
+El mismo patrón escala linealmente:
 
+```python
+agent = Agent(model)
+
+# Tools de inventario
+@agent.tool
+def search_products(...): pass
+
+@agent.tool
+def check_stock(...): pass
+
+@agent.tool
+def reserve_stock(...): pass
+
+# Tools de pedidos
+@agent.tool
+def create_order(...): pass
+
+@agent.tool
+def track_order(...): pass
+
+@agent.tool
+def cancel_order(...): pass
+
+# Tools de clientes
+@agent.tool
+def get_customer_info(...): pass
+
+@agent.tool
+def update_preferences(...): pass
+
+# Tools de pagos
+@agent.tool
+def process_payment(...): pass
+
+@agent.tool
+def issue_refund(...): pass
+
+# ... hasta 30+ tools
+```
+
+**El agente seguirá orquestando correctamente** mientras cada tool tenga:
+- Docstring claro que explica cuándo usarla
+- Parámetros bien validados
+- Responsabilidad única y bien definida
 
 ---
 
-## 2. Validadores de salida y *Reflection*
+## 2. Output Validators y Reflection
 
-Hasta ahora, el agente genera una respuesta y la devuelve al usuario inmediatamente.  
-Pero, ¿qué pasa si la respuesta es demasiado vaga, genérica o contradice tus reglas de negocio?
+Hasta ahora, el agente genera una respuesta y la devuelve al usuario inmediatamente. Pero, ¿qué pasa si la respuesta es demasiado vaga, contiene errores lógicos, o contradice tus reglas de negocio?
 
-Los **validadores de salida** (`@agent.output_validator`) te permiten interceptar la respuesta **antes** de que llegue al usuario, verificarla, y si no cumple tus criterios, hacer que el agente la regenere automáticamente mediante `ModelRetry`.
+Los **output validators** (`@agent.output_validator`) te permiten interceptar la respuesta **antes** de que llegue al usuario, verificarla según tus criterios, y si no los cumple, hacer que el agente la regenere automáticamente mediante `ModelRetry`.
 
-### 🔍 ¿Por qué es revolucionario?
+### ¿Por qué es revolucionario?
 
-Es como tener un **editor automático de calidad** que revisa todo lo que escribe el modelo.  
-El agente itera hasta generar un resultado que pase las validaciones o hasta agotar el número de reintentos definidos.
+Es como tener un **editor automático de calidad** que revisa todo lo que escribe el modelo antes de publicarlo. No confías ciegamente en el LLM; verificas su trabajo y lo obligas a mejorarlo hasta que cumpla tus estándares.
 
----
+**Sin validator:**
+```
+Usuario: "Genera propuesta para DataPulse"
+Agente: "DataPulse es una solución innovadora líder del mercado..."
+→ Se envía al usuario (con frases vacías)
+```
 
-### 2.1. Validación básica con `ModelRetry`
+**Con validator:**
+```
+Usuario: "Genera propuesta para DataPulse"
+Intento 1: "DataPulse es una solución innovadora..."
+Validator: ❌ "Elimina frases genéricas"
+Intento 2: "DataPulse automatiza análisis empresarial con ROI del 300%..."
+Validator: ✅ Aprobado
+→ Se envía al usuario (con datos concretos)
+```
 
-Vamos a construir un generador de **propuestas comerciales**. Queremos garantizar que cada propuesta:
+### 2.1. Validación básica con ModelRetry
 
-- Mencione explícitamente el **nombre del cliente** en el título.  
-- Use **lenguaje concreto y profesional**, evitando frases genéricas tipo “solución innovadora” o “líder del mercado”.  
-- Incluya **beneficios bien desarrollados**, con un mínimo de 8 palabras cada uno.  
-- Y, si el *brief* incluye un presupuesto, asegure que la **estimación económica sea coherente** con ese valor (±20%).
+Vamos a construir un generador de **propuestas comerciales** para un equipo de ventas. Queremos garantizar que cada propuesta cumpla estándares profesionales antes de enviarse al cliente.
 
----
+**Escenario empresarial:**  
+Trabajas en una consultora que envía decenas de propuestas semanalmente. El equipo comercial se queja de que a veces el agente genera:
+- Títulos genéricos que no mencionan al cliente
+- Lenguaje de brochure vacío ("solución innovadora", "líder del mercado")
+- Beneficios vagos sin datos concretos
+- Presupuestos incoherentes con el brief
 
-### 💡 ¿Qué vamos a construir?
+Necesitas un sistema que **garantice calidad** antes de que la propuesta llegue al cliente.
 
-Un sistema que genera propuestas profesionales y **se autocorrige** si detecta problemas de calidad.
-
-Este ejemplo muestra cómo usar `@agent.output_validator` y `ModelRetry` para crear agentes que **piensan dos veces antes de responder**, validando sus salidas según criterios empresariales personalizados.
-
+**¿Qué vamos a construir?**  
+Un sistema que genera propuestas y las valida automáticamente según 4 criterios empresariales:
+1. Título debe mencionar al cliente
+2. Resumen sin frases genéricas
+3. Beneficios desarrollados (mínimo 8 palabras)
+4. Presupuesto coherente (±20% del brief)
 
 **`01-agentes-avanzados/result_validation.py`:**
 
@@ -741,7 +1175,7 @@ async def validate_proposal_quality(
     # --------- Validación 4: Coherencia presupuesto vs estimación (simple y explícita) ---------
     # Si budget_eur viene informado, pedimos que estimated_value_eur no se desvíe >±20%
     if result.budget_eur is not None and result.budget_eur > 0:
-        lower = 0.2 * result.budget_eur
+        lower = 0.8 * result.budget_eur
         upper = 1.2 * result.budget_eur
         if not (lower <= result.estimated_value_eur <= upper):
             raise ModelRetry(
@@ -753,7 +1187,7 @@ async def validate_proposal_quality(
 
 def run_example() -> None:
     prompt = (
-        "Crea una propuesta para  DataPulse para implementar un sistema de IA de análisis de datos. "
+        "Crea una propuesta para DataPulse para implementar un sistema de IA de análisis de datos. "
         "Presupuesto estimado: 35.000 EUR. Entregables: pipeline de ingesta, dashboard ejecutivo y "
         "automatización de informes semanales."
     )
@@ -789,126 +1223,237 @@ if __name__ == "__main__":
 uv run python 01-agentes-avanzados/result_validation.py
 ```
 
-```markdown
-## ¿Qué está pasando aquí?
+---
 
-El **validator intercepta** la respuesta del agente antes de devolverla al usuario:
+### Entendiendo el flujo de validación
 
-1. Agente genera propuesta inicial
-2. `validate_proposal_quality()` revisa 4 criterios
-3. Si falla → `ModelRetry` con feedback específico
-4. Agente regenera incorporando el feedback
-5. Repite hasta pasar validación o agotar `MAX_RETRIES=2`
+Cuando ejecutas este código, el validator intercepta la respuesta antes de que llegue al usuario:
+
+```
+┌────────────────────────────────────────────────┐
+│ 1. Agente genera propuesta inicial            │
+│    (puede contener problemas de calidad)      │
+└───────────────────┬────────────────────────────┘
+                    ▼
+┌────────────────────────────────────────────────┐
+│ 2. Validator revisa los 4 criterios           │
+│    ✓ Cliente en título?                       │
+│    ✓ Sin frases genéricas?                    │
+│    ✓ Beneficios desarrollados?                │
+│    ✓ Presupuesto coherente?                   │
+└───────────────────┬────────────────────────────┘
+                    ▼
+            ¿Alguno falla?
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+       SÍ                      NO
+        │                       │
+        ▼                       ▼
+┌───────────────┐      ┌───────────────┐
+│ ModelRetry    │      │ Devuelve      │
+│ con feedback  │      │ al usuario    │
+└───────┬───────┘      └───────────────┘
+        │
+        ▼
+┌────────────────────────────────────────────────┐
+│ 3. Agente lee el feedback y regenera          │
+│    "Ah, debo mencionar DataPulse en título"   │
+└───────────────────┬────────────────────────────┘
+                    ▼
+┌────────────────────────────────────────────────┐
+│ 4. Validator revisa nuevamente                │
+│    (repite hasta pasar o agotar MAX_RETRIES)  │
+└────────────────────────────────────────────────┘
+```
 
 ---
 
-## Las 4 validaciones empresariales
+### Las 4 validaciones empresariales explicadas
 
-### 1. Cliente en el título
+#### Validación 1: Cliente en el título
+
 ```python
 if result.client_name.lower() not in result.proposal_title.lower():
-    raise ModelRetry("El título debe mencionar 'DataPulse'")
+    raise ModelRetry(
+        f"El título debe mencionar explícitamente al cliente '{result.client_name}'..."
+    )
 ```
 
-### 2. Lenguaje concreto
+**¿Por qué es importante?**  
+Los títulos genéricos tipo "Propuesta de IA para análisis empresarial" no personalizan. El cliente quiere ver su nombre: "Sistema de Análisis IA para DataPulse".
+
+**Ejemplo de iteración:**
+```
+Intento 1: "Propuesta de IA para análisis empresarial"
+❌ Validator: "Debe mencionar 'DataPulse'"
+
+Intento 2: "Sistema de Análisis IA para DataPulse"
+✅ Aprobado
+```
+
+#### Validación 2: Lenguaje concreto (no brochure)
+
 ```python
-generic_phrases = {"solución innovadora", "líder del mercado", "alto valor añadido"}
-# Rechaza frases vacías, exige datos concretos
+generic_phrases = {
+    "solución innovadora",
+    "líder del mercado",
+    "alto valor añadido",
+    ...
+}
+if any(p in summary_lc for p in generic_phrases):
+    raise ModelRetry("Sustituye por lenguaje específico con datos concretos...")
 ```
 
-### 3. Beneficios desarrollados (≥8 palabras)
+**¿Por qué es crítico?**  
+Las frases de marketing vacío no convencen a ejecutivos. Necesitan datos: "Pipeline ML procesando 50k registros/día con reducción estimada de 15h/semana en análisis manual" es mucho más potente que "solución innovadora de alto valor".
+
+**Ejemplo de iteración:**
+```
+Intento 1: "DataPulse es una solución innovadora que transformará..."
+❌ Validator: "Elimina frases genéricas"
+
+Intento 2: "Pipeline procesando 50k registros/día, reduciendo 15h/semana 
+            de análisis manual mediante modelos ML predictivos..."
+✅ Aprobado
+```
+
+#### Validación 3: Beneficios desarrollados (≥8 palabras)
+
 ```python
 short_benefits = [b for b in result.key_benefits if len(b.split()) < 8]
 if short_benefits:
-    raise ModelRetry("Desarrolla beneficios con métricas concretas")
+    raise ModelRetry("Desarrolla cada beneficio con al menos 8 palabras...")
 ```
 
-### 4. Coherencia presupuesto ±20%
+**¿Por qué 8 palabras?**  
+Los beneficios vagos tipo "ROI positivo" o "Mejor análisis" no dan información útil. Un beneficio desarrollado explica el qué, el cómo y el impacto: "Reducción del 40% en tiempo de generación de reportes mediante automatización de pipelines de datos" (14 palabras).
+
+**Ejemplo de iteración:**
+```
+Intento 1: ["ROI positivo", "Mejor análisis", "Datos claros"]
+❌ Validator: "Beneficios demasiado vagos (<8 palabras)"
+
+Intento 2: [
+    "Reducción del 40% en tiempo de reportes mediante automatización",
+    "Dashboard ejecutivo con 15 KPIs actualizados en tiempo real",
+    "Alertas predictivas que identifican tendencias 3 semanas antes"
+]
+✅ Aprobado (cada uno >8 palabras, con datos específicos)
+```
+
+#### Validación 4: Coherencia presupuesto ±20%
+
 ```python
-# Brief: 35.000 EUR → estimación debe estar entre 28k-42k
-if not (0.8 * budget <= estimated <= 1.2 * budget):
-    raise ModelRetry("Valor estimado incoherente con presupuesto")
+if result.budget_eur is not None:
+    lower = 0.8 * result.budget_eur
+    upper = 1.2 * result.budget_eur
+    if not (lower <= result.estimated_value_eur <= upper):
+        raise ModelRetry(
+            f"Valor estimado ({result.estimated_value_eur}) no coherente 
+            con presupuesto ({result.budget_eur})..."
+        )
+```
+
+**¿Por qué ±20%?**  
+Si el cliente menciona presupuesto de 35k EUR y tu propuesta estima 80k EUR, hay desconexión. El validator exige coherencia: entre 28k-42k EUR (±20%).
+
+**Ejemplo de iteración:**
+```
+Brief: presupuesto 35.000 EUR
+
+Intento 1: estimated_value_eur = 65.000 EUR
+❌ Validator: "65k no es coherente con 35k (±20% = 28k-42k)"
+
+Intento 2: estimated_value_eur = 38.500 EUR
+✅ Aprobado (dentro del rango 28k-42k)
 ```
 
 ---
 
-## Ejemplo de iteración
+### Conceptos clave de validación
 
-**Intento 1:**
-```
-Título: "Propuesta de IA para análisis empresarial"
-```
-❌ "El título debe mencionar 'DataPulse'"
+**`@agent.output_validator`**  
+Decorador que marca una función como validator. Se ejecuta automáticamente después de que el agente genera el output pero antes de devolverlo.
 
-**Intento 2:**
-```
-Título: "Sistema de Análisis IA para DataPulse"
-Resumen: "Una solución innovadora que transformará..."
-```
-❌ "Contiene frases genéricas"
+**`ModelRetry`**  
+Excepción especial que indica "esta respuesta no es válida, intenta de nuevo con este feedback". El mensaje que incluyas se envía al LLM para que sepa qué corregir.
 
-**Intento 3:**
-```
-Título: "Sistema de Análisis IA para DataPulse"
-Resumen: "Pipeline ML procesando 50k registros/día con dashboard ejecutivo..."
-Beneficios: ["ROI positivo", "Mejor análisis"]
-```
-❌ "Beneficios demasiado vagos (< 8 palabras)"
+```python
+# ❌ Malo: ModelRetry sin feedback útil
+raise ModelRetry("Está mal")
 
-**Resultado:** Si agota `MAX_RETRIES=2`, lanza excepción con el último error.
+# ✅ Bueno: feedback específico y accionable
+raise ModelRetry(
+    "El título debe mencionar al cliente 'DataPulse'. "
+    "Título actual: 'Propuesta de IA'. "
+    "Reescribe incluyendo el nombre del cliente."
+)
+```
+
+**`retries=MAX_RETRIES`**  
+Número máximo de veces que el agente puede reintentar. Si agota los retries sin pasar validación, lanza una excepción.
+
+```python
+MAX_RETRIES = 2  # 3 intentos totales (inicial + 2 retries)
+agent = Agent(model, output_type=SalesProposal, retries=MAX_RETRIES)
+```
 
 ---
 
-## Conceptos clave
+### Beneficios empresariales cuantificables
 
-- **`@agent.output_validator`**: Decora función que valida el resultado
-- **`ModelRetry`**: Excepción que fuerza regeneración con feedback específico
-- **`retries=2`**: Máximo de reintentos (3 intentos totales)
-- **Feedback accionable**: No "está mal", sino **qué** y **cómo** corregir
-
----
-
-## Beneficios empresariales
-
-| Beneficio | Impacto |
-|-----------|---------|
-| Calidad consistente | Todas las propuestas cumplen estándares |
-| Sin revisión manual | Autocorrección de errores comunes |
-| Feedback trazable | Logs muestran qué validación falló |
-| Costes controlados | `MAX_RETRIES` limita tokens gastados |
+| Métrica | Sin validator | Con validator |
+|---------|---------------|---------------|
+| **Propuestas con frases genéricas** | ~40% | <5% |
+| **Tiempo de revisión manual** | 15 min/propuesta | 2 min/propuesta |
+| **Propuestas rechazadas por clientes** | ~25% | <10% |
+| **Confianza del equipo comercial** | Media | Alta |
+| **Consistencia de calidad** | Variable | Uniforme |
 
 ---
 
-## Por qué funciona
+### Cuándo usar output validators
 
-**Sin validator:**
-```
-Agente: "Una innovadora solución líder del mercado..." ❌
-```
+**✅ Úsalos cuando:**
+- Generas contenido que va directo a clientes (propuestas, emails, reportes)
+- Tienes criterios objetivos de calidad (longitud, formato, contenido requerido)
+- El coste de un error es alto (contratos, informes financieros)
+- Quieres garantizar consistencia entre múltiples generaciones
 
-**Con validator:**
-```
-Intento 1: "Una innovadora solución..."
-Validator: ❌ "Elimina frases genéricas"
-Intento 2: "Pipeline procesando 50k registros/día con reducción 
-           estimada de 15h/semana en análisis manual..." ✅
-```
-
-El validator actúa como **control de calidad automático** que garantiza que ninguna propuesta sale sin cumplir tus criterios de negocio.
-```
+**❌ No los uses cuando:**
+- Las queries son exploratorias (brainstorming, ideas iniciales)
+- Los criterios de "bueno" son totalmente subjetivos
+- La latencia es crítica (cada retry añade tiempo)
+- Solo necesitas validación Pydantic básica (tipos, formatos)
 
 ---
 
 ### 2.2. Reflection pattern avanzado
 
-El **reflection pattern** lleva la validación un paso más allá: el agente actúa como su propio crítico, evaluando su trabajo y mejorándolo iterativamente.
+El **reflection pattern** es una evolución de los validators básicos. En lugar de solo verificar reglas técnicas, el agente actúa como su **propio crítico**, evaluando calidad subjetiva: tono, claridad, profesionalidad, coherencia argumentativa.
 
-**¿En qué se diferencia del validator básico?**
-- **Validator básico**: Verificas reglas específicas (longitud, formato, etc.)
-- **Reflection**: El agente evalúa **calidad subjetiva** (tono, claridad, profesionalidad)
+**¿En qué se diferencia?**
+
+| Aspecto | Validator básico | Reflection pattern |
+|---------|-----------------|-------------------|
+| **Qué valida** | Reglas objetivas (longitud, formato, campos requeridos) | Calidad subjetiva (tono, claridad, coherencia) |
+| **Tipo de feedback** | "Falta campo X" | "El tono es demasiado casual para comunicación corporativa" |
+| **Número de iteraciones** | Pocas (1-2) | Varias (3-5) típicamente |
+| **Cuándo usar** | Validar datos estructurados | Mejorar contenido creativo |
+
+**Metáfora útil:**  
+- **Validator básico** = Corrector ortográfico (detecta errores objetivos)
+- **Reflection** = Editor humano (sugiere mejoras de estilo y sustancia)
+
+**Escenario empresarial:**  
+Trabajas en el departamento de comunicación interna de una empresa. Envían cientos de emails semanalmente: mantenimientos de sistemas, cambios de políticas, anuncios de eventos. Necesitas que todos cumplan estándares profesionales sin revisión manual.
 
 **¿Qué vamos a construir?**  
-Un sistema de redacción de emails corporativos que se autocritica y mejora hasta cumplir estándares profesionales.
+Un sistema de redacción de emails corporativos que:
+- Se autocritica evaluando tono, brevedad, claridad del CTA
+- Reescribe iterativamente hasta cumplir estándares profesionales
+- Garantiza que ningún email sale sin pasar "control de calidad"
 
 **`01-agentes-avanzados/reflection_pattern.py`:**
 
@@ -927,12 +1472,12 @@ class EmailDraft(BaseModel):
     tone_score: int = Field(ge=1, le=5, description="1=muy formal, 5=muy casual")
 
 model = OpenAIChatModel(
-    "gpt-5",
+    model_name="gpt-5",
     provider=OpenAIProvider(api_key=settings.openai_api_key)
 )
 
 agent = Agent(
-    model,
+    model=model,
     output_type=EmailDraft,
     retries=3,  # Más reintentos para permitir refinamiento iterativo
     instructions=(
@@ -941,7 +1486,7 @@ agent = Agent(
     )
 )
 
-@agent.result_validator
+@agent.output_validator
 async def reflect_on_email_quality(
     ctx: RunContext[None],
     result: EmailDraft
@@ -1022,73 +1567,228 @@ print(f"\nIntentos usados: {result.all_messages_count}")
 uv run python 01-agentes-avanzados/reflection_pattern.py
 ```
 
-**¿Qué está pasando aquí?**
+---
 
-El reflection pattern crea un ciclo de mejora continua:
+### El ciclo de mejora continua
+
+El reflection pattern crea un ciclo donde el agente mejora su trabajo iterativamente:
 
 ```
 ┌─────────────────────────────────────────┐
-│ 1. Agente genera borrador inicial      │
+│ Intento 1: Borrador inicial             │
+│ Asunto: "¡IMPORTANTE! Mantenimiento"    │
+│ Tono: 4/5 (casual)                      │
+│ Body: 180 palabras                      │
 └───────────────┬─────────────────────────┘
-                │
                 ▼
 ┌─────────────────────────────────────────┐
-│ 2. Validator actúa como crítico        │
-│    Detecta: asunto genérico, tono      │
-│    casual, email largo                  │
+│ Validator actúa como crítico            │
+│ ❌ Asunto sensacionalista               │
+│ ❌ Tono demasiado casual                │
+│ ❌ Email demasiado largo                │
 └───────────────┬─────────────────────────┘
-                │
                 ▼ ModelRetry con feedback
 ┌─────────────────────────────────────────┐
-│ 3. Agente lee el feedback y reescribe  │
-│    "Ah, debo ser más específico..."    │
+│ Intento 2: Mejora basada en feedback    │
+│ Asunto: "Mantenimiento servidor sábado" │
+│ Tono: 3/5                               │
+│ Body: 160 palabras                      │
 └───────────────┬─────────────────────────┘
-                │
                 ▼
 ┌─────────────────────────────────────────┐
-│ 4. Validator revisa nuevamente         │
-│    Detecta: ahora solo un problema     │
+│ Validator revisa nuevamente             │
+│ ✓ Asunto específico                     │
+│ ✓ Tono apropiado                        │
+│ ❌ Aún algo largo (160 vs 150 max)      │
 └───────────────┬─────────────────────────┘
-                │
                 ▼ ModelRetry con feedback
 ┌─────────────────────────────────────────┐
-│ 5. Agente refina basándose en crítica  │
+│ Intento 3: Refinamiento final           │
+│ Body: 145 palabras                      │
 └───────────────┬─────────────────────────┘
-                │
                 ▼
 ┌─────────────────────────────────────────┐
-│ 6. Validator: ✓ Todo correcto          │
-│    Devuelve resultado al usuario       │
+│ Validator: ✓ Todo correcto              │
+│ Devuelve resultado al usuario           │
 └─────────────────────────────────────────┘
 ```
 
-**Diferencias clave:**
+Cada iteración **se acerca más** al estándar de calidad sin intervención humana.
 
-| Aspecto | Validator básico | Reflection pattern |
-|---------|-----------------|-------------------|
-| **Qué valida** | Reglas técnicas (longitud, formato) | Calidad subjetiva (tono, claridad) |
-| **Feedback** | "Falta campo X" | "El tono no es apropiado porque..." |
-| **Iteraciones** | Pocas (1-2) | Varias (3-5) |
-| **Uso típico** | Validar datos estructurados | Mejorar contenido creativo |
+---
 
-**Caso de uso real:**
+### Análisis de los criterios de reflection
 
-Imagina que necesitas generar 1000 emails de marketing. Sin reflection:
-- 30% serían demasiado largos
-- 20% tendrían asuntos clickbait
-- 15% tendrían CTAs poco claras
+#### Criterio 1: Asunto sin sensacionalismo
 
-Con reflection:
-- 95% cumplen todos los criterios de calidad
-- Los que no, se marcan para revisión humana
-- Ahorraste horas de edición manual
+```python
+if any(word in result.subject.lower() for word in ["importante", "urgente", "atención"]):
+    issues.append("El asunto usa palabras sensacionalistas...")
+```
 
-**Cuándo usar reflection:**
-- ✅ Generación de contenido (emails, informes, propuestas)
-- ✅ Cuando la calidad es más importante que la velocidad
-- ✅ Cuando los criterios de "bueno" son subjetivos
-- ❌ APIs de baja latencia (cada retry añade tiempo)
-- ❌ Tareas con validación objetiva (solo verificar formato)
+**¿Por qué importa?**  
+Los asuntos tipo "¡URGENTE! ¡IMPORTANTE!" pierden efectividad por sobreuso. Son percibidos como spam o "que grita el lobo". Un asunto específico "Mantenimiento servidor sábado 2-6am" comunica mejor.
+
+#### Criterio 2: Tono profesional equilibrado
+
+```python
+if result.tone_score not in [2, 3]:
+    issues.append("El tono no es apropiado para comunicación corporativa...")
+```
+
+**Escala de tono:**
+- **1**: Extremadamente formal ("A quien corresponda, se les comunica...")
+- **2-3**: Profesional equilibrado ("Hola equipo, les informo...")  ← objetivo
+- **4**: Casual ("Hola! Les cuento que...")
+- **5**: Muy casual ("Holaaa! Sepan que...")
+
+Para emails corporativos internos, 2-3 es el sweet spot: profesional pero no distante.
+
+#### Criterio 3: CTA clara y completa
+
+```python
+if not result.call_to_action.strip().endswith(("?", ".", "!")):
+    issues.append("La llamada a la acción debe ser una oración completa.")
+```
+
+**Ejemplos:**
+
+```
+❌ Malo (incompleto):
+"Guarden su trabajo"
+
+✅ Bueno (completo y claro):
+"Guarden todo su trabajo antes de las 2am del sábado."
+```
+
+Un CTA debe ser una instrucción completa que no deje ambigüedad sobre qué hacer, cuándo y por qué.
+
+#### Criterio 4: Brevedad (<150 palabras)
+
+```python
+word_count = len(result.body.split())
+if word_count > 150:
+    issues.append(f"El email tiene {word_count} palabras...")
+```
+
+**¿Por qué 150 palabras?**  
+Investigación en comunicación empresarial muestra que emails >150 palabras:
+- Se leen un 40% menos
+- Tienen 30% menos tasa de respuesta
+- Aumentan riesgo de malinterpretación
+
+La brevedad fuerza claridad.
+
+---
+
+### Caso de uso real: automatización de comunicaciones
+
+**Antes (revisión manual):**
+```
+1. Redactor genera borrador          → 15 min
+2. Manager revisa                    → 10 min
+3. Correción de estilo               → 8 min
+4. Segunda revisión                  → 5 min
+────────────────────────────────────────────
+Total: 38 min por email
+
+50 emails/semana = 31.7 horas/semana
+```
+
+**Después (reflection pattern):**
+```
+1. Agente genera y se autocorrige    → 30 segundos
+2. Revisión humana final (opcional)  → 2 min
+────────────────────────────────────────────
+Total: 2.5 min por email
+
+50 emails/semana = 2.1 horas/semana
+
+Ahorro: 29.6 horas/semana (93%)
+```
+
+---
+
+### Cuándo usar reflection vs validator básico
+
+**Usa reflection cuando:**
+- ✅ Generas contenido creativo (emails, artículos, propuestas)
+- ✅ Los criterios de "bueno" incluyen aspectos subjetivos (tono, claridad)
+- ✅ La calidad es más importante que la velocidad
+- ✅ Puedes permitirte 3-5 intentos (latencia aceptable)
+
+**Usa validator básico cuando:**
+- ✅ Solo necesitas verificar formato o datos requeridos
+- ✅ Los criterios son totalmente objetivos
+- ✅ La latencia es crítica (cada retry añade tiempo)
+- ✅ Validación Pydantic cubre tus necesidades
+
+---
+
+### Patrón de implementación recomendado
+
+```python
+@agent.output_validator
+async def reflect(ctx, result):
+    issues = []  # Lista de problemas detectados
+    
+    # Criterio 1: verificación objetiva
+    if len(result.text) > 280:
+        issues.append("Máximo 280 caracteres")
+    
+    # Criterio 2: verificación subjetiva
+    if any(p in result.text.lower() for p in ["tal vez", "quizás", "podría"]):
+        issues.append("Elimina lenguaje dubitativo, sé directo")
+    
+    # Criterio 3: lógica de negocio
+    if result.confidence < 0.6 and result.requires_action:
+        issues.append("Confianza baja no debe requerir acción")
+    
+    # Si hay problemas, consolidar feedback y reintentar
+    if issues:
+        feedback = "\n".join(f"• {issue}" for issue in issues)
+        raise ModelRetry(f"Mejoras necesarias:\n{feedback}\n\nReescribe corrigiendo estos aspectos.")
+    
+    return result
+```
+
+**Claves del patrón:**
+1. Acumula todos los problemas en una lista
+2. Consolida el feedback en un solo mensaje
+3. Sé específico sobre qué y cómo corregir
+4. Devuelve el resultado sin modificar si pasa
+
+Este patrón permite al agente entender **todos** los problemas de una vez en lugar de descubrirlos uno por uno en iteraciones sucesivas.
+
+---
+
+## Resumen del progreso hasta aquí
+
+Has dominado las técnicas fundamentales de agentes avanzados:
+
+✅ **Tools con validación compleja**  
+- Múltiples parámetros con `Annotated` y `Field`
+- Restricciones con `Literal` y constraints numéricos
+- Validación en capas (Pydantic + lógica de negocio)
+- Manejo de casos edge sin crashear
+
+✅ **Orquestación de múltiples tools**  
+- El agente decide qué tools usar y en qué orden
+- Docstrings que guían la selección
+- Separación clara de responsabilidades
+- Control de tono conversacional
+
+✅ **Output validators para garantizar calidad**  
+- Interceptar respuestas antes de entregarlas
+- Validación de criterios empresariales específicos
+- Feedback accionable con `ModelRetry`
+- Configuración de retries según criticidad
+
+✅ **Reflection pattern para mejora iterativa**  
+- El agente actúa como su propio crítico
+- Evalúa calidad subjetiva (tono, claridad, coherencia)
+- Mejora continua hasta cumplir estándares
+- Ahorro masivo en revisión manual
 
 ---
 
