@@ -4,9 +4,10 @@ chapters:
   - file: 00-introduccion/README
     sections:
       - file: 00-introduccion/00_proyecto
+      - file: 00-introduccion/00_proyecto_solucion
   - file: 01-agentes-basicos/README
     sections:
-      - file: 01-agentes-basicos/agentes_basicos
+      - file: 01-agentes-basicos/01_proyecto
   - file: 02-contexto-y-validacion/README
     sections:
       - file: 02-contexto-y-validacion/validacion

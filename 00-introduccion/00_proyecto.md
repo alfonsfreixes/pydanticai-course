@@ -87,16 +87,21 @@ Crea una clase `BusinessResponse` con tres campos:
 
 ### 2. Configura el agente con el patrón correcto
 
-Usa OpenAI (gpt-5-mini) o Anthropic siguiendo el patrón explícito:
+Usa OpenAI (gpt-5-mini) siguiendo el mismo patrón que la solución oficial:
 ```python
-model = Model("gpt-5-mini", provider=Provider(api_key=settings.openai_api_key))
+model = OpenAIChatModel(
+    model_name="gpt-5-mini",
+    provider=OpenAIProvider(api_key=settings.openai_api_key),
+)
+
 agent = Agent(
-    model, 
+    model=model,
     output_type=BusinessResponse,
     retries=2,  # Importante: permite reintentos si falla validación
     instructions="..."
 )
 ```
+> Si prefieres Anthropic, cambia la clase de modelo y provider respetando la misma estructura.
 
 ### 3. Proporciona datos de negocio en las instrucciones
 
