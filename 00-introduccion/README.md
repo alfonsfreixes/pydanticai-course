@@ -2,7 +2,7 @@
 
 **PydanticAI** es un framework Python para construir aplicaciones GenAI con validación de tipos y observabilidad integrada. Desarrollado por el equipo de Pydantic, alcanzó V1 en septiembre 2025 con política de estabilidad de API.
 
-**Versión actual:** PydanticAI 1.10 | Pydantic 2.12 | Python ≥3.11
+**Versión actual:** PydanticAI 1.10+ | Pydantic 2.12 | Python ≥3.11
 
 ---
 

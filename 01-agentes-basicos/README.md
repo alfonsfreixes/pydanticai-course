@@ -8,7 +8,7 @@ En este módulo construirás agentes que:
 - Manejan casos edge de forma elegante
 - Integran con sistemas externos de manera controlada
 
-**Versión actual:** PydanticAI 1.10 | Pydantic 2.12 | Python ≥3.11
+**Versión actual:** PydanticAI 1.10+ | Pydantic 2.12 | Python ≥3.11
 
 ---
 
