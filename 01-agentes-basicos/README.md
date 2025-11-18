@@ -732,7 +732,7 @@ Cuando ejecutas `agent.run_sync("¿Tenéis Mouse Wireless?")`, esto es lo que pa
 
 ```
 ┌─────────────────────────────────────────────┐
-│ 1. Usuario: "¿Tenéis Mouse Wireless?"      │
+│ 1. Usuario: "¿Tenéis Mouse Wireless?"       │
 └──────────────────┬──────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────┐
@@ -742,33 +742,33 @@ Cuando ejecutas `agent.run_sync("¿Tenéis Mouse Wireless?")`, esto es lo que pa
 └──────────────────┬──────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────┐
-│ 3. Agente lee docstrings de tools          │
+│ 3. Agente lee docstrings de tools           │
 │    search_product: "cuando usuario mencione │
 │                     nombre (ej: Mouse)"     │
 │    check_stock: "cuando tengas código PXXX" │
 └──────────────────┬──────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────┐
-│ 4. Agente decide: usar search_product      │
+│ 4. Agente decide: usar search_product       │
 │    Llama: search_product("Mouse Wireless")  │
 └──────────────────┬──────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────┐
-│ 5. Tool devuelve: {product_code: "P002"}   │
+│ 5. Tool devuelve: {product_code: "P002"}    │
 └──────────────────┬──────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────┐
-│ 6. Agente: "Tengo código, ahora necesito   │
+│ 6. Agente: "Tengo código, ahora necesito    │
 │    stock". Llama: check_stock("P002")       │
 └──────────────────┬──────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────┐
-│ 7. Tool devuelve: {stock: 0, available: F} │
+│ 7. Tool devuelve: {stock: 0, available: F}  │
 └──────────────────┬──────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────┐
-│ 8. Agente genera respuesta natural:        │
-│    "El Mouse Wireless (código P002) está   │
+│ 8. Agente genera respuesta natural:         │
+│    "El Mouse Wireless (código P002) está    │
 │    agotado; stock 0 unidades."              │
 └─────────────────────────────────────────────┘
 ```
@@ -1237,16 +1237,16 @@ Cuando ejecutas este código, el validator intercepta la respuesta antes de que 
 
 ```
 ┌────────────────────────────────────────────────┐
-│ 1. Agente genera propuesta inicial            │
-│    (puede contener problemas de calidad)      │
+│ 1. Agente genera propuesta inicial             │
+│    (puede contener problemas de calidad)       │
 └───────────────────┬────────────────────────────┘
                     ▼
 ┌────────────────────────────────────────────────┐
-│ 2. Validator revisa los 4 criterios           │
-│    ✓ Cliente en título?                       │
-│    ✓ Sin frases genéricas?                    │
-│    ✓ Beneficios desarrollados?                │
-│    ✓ Presupuesto coherente?                   │
+│ 2. Validator revisa los 4 criterios            │
+│    - Cliente en título?                        │
+│    - Sin frases genéricas?                     │
+│    - Beneficios desarrollados?                 │
+│    - Presupuesto coherente?                    │
 └───────────────────┬────────────────────────────┘
                     ▼
             ¿Alguno falla?
@@ -1263,13 +1263,13 @@ Cuando ejecutas este código, el validator intercepta la respuesta antes de que 
         │
         ▼
 ┌────────────────────────────────────────────────┐
-│ 3. Agente lee el feedback y regenera          │
-│    "Ah, debo mencionar DataPulse en título"   │
+│ 3. Agente lee el feedback y regenera           │
+│    "Ah, debo mencionar DataPulse en título"    │
 └───────────────────┬────────────────────────────┘
                     ▼
 ┌────────────────────────────────────────────────┐
-│ 4. Validator revisa nuevamente                │
-│    (repite hasta pasar o agotar MAX_RETRIES)  │
+│ 4. Validator revisa nuevamente                 │
+│    (repite hasta pasar o agotar MAX_RETRIES)   │
 └────────────────────────────────────────────────┘
 ```
 
@@ -1510,7 +1510,7 @@ async def reflect_on_email_quality(
     - CTA inequívoca que dice exactamente qué hacer
     - Tono apropiado para comunicación corporativa (2-3/5)
     """
-    issues = []
+    issues: list[str] = []
     
     # Criterio 1: Asunto sin sensacionalismo
     if any(word in result.subject.lower() for word in ["importante", "urgente", "atención"]):
@@ -1565,7 +1565,8 @@ print(f"Asunto: {email.subject}")
 print(f"Tono: {email.tone_score}/5")
 print(f"\nCuerpo:\n{email.body}")
 print(f"\nCTA: {email.call_to_action}")
-print(f"\nIntentos usados: {result.all_messages_count}")
+print(f"\nIntentos usados: {result.usage().requests}")
+
 ```
 
 **Ejecuta el ejemplo:**
