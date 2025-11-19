@@ -1771,7 +1771,7 @@ Este patrón permite al agente entender **todos** los problemas de una vez en lu
 
 ## Resumen del progreso hasta aquí
 
-Has dominado las técnicas fundamentales de agentes avanzados:
+Has visto las técnicas fundamentales de agentes avanzados:
 
 ✅ **Tools con validación compleja**  
 - Múltiples parámetros con `Annotated` y `Field`
@@ -1818,7 +1818,7 @@ Un asistente financiero con dos tools:
 1. `validate_budget`: Crítica, 3 reintentos (verifica límites departamentales)
 2. `get_exchange_rate`: Informativa, 1 reintento (consulta tipo de cambio)
 
-**`01-agentes-avanzados/retries_por_tool.py`:**
+**`01-agentes-avanzados/retries_per_tool.py`:**
 
 ```python
 from pydantic_ai import Agent, RunContext, Tool, ModelRetry
