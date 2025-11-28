@@ -1,0 +1,761 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Módulo 1 · Core Patterns: DI y Tools &#8212; Curso PydanticAI desde cero</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '01-core-patterns/README';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Ejemplo 01: CRM Agent (Service Layer Pattern)" href="01_ejemplo_01.html" />
+    <link rel="prev" title="Ejemplo 02: Normalizador de Envíos (Logística)" href="../00-introduccion/00_ejemplo_02.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt="Curso PydanticAI desde cero - Home"/>
+    <script>document.write(`<img src="../_static/logo.svg" class="logo__image only-dark" alt="Curso PydanticAI desde cero - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../00-introduccion/README.html">Módulo 0 · Fundamentos y Filosofía</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../00-introduccion/00_ejemplo_01.html">Ejemplo 01: Extractor de Entidades Legales (NER Estructurado)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../00-introduccion/00_ejemplo_02.html">Ejemplo 02: Normalizador de Envíos (Logística)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Módulo 1 · Core Patterns: DI y Tools</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="01_ejemplo_01.html">Ejemplo 01: CRM Agent (Service Layer Pattern)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_ejemplo_02.html">Ejemplo 02: Unit Testing &amp; TestModel (Zero-Cost Testing)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../02-contexto/README.html">Módulo 2 · Contexto y validación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../03-avanzado/README.html">Módulo 3 · Integración con LLMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/01-core-patterns/README.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Módulo 1 · Core Patterns: DI y Tools</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-concepto-de-runcontext">1. El Concepto de <code class="docutils literal notranslate"><span class="pre">RunContext</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#por-que-hacer-esto">¿Por qué hacer esto?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-dando-manos-al-agente">2. Tools: Dando manos al Agente</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sintaxis-moderna-pydantic-v2">Sintaxis Moderna (Pydantic V2)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ejemplo-central-gestor-de-inventario-anti-fraude">3. Ejemplo Central: Gestor de Inventario Anti-Fraude</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conceptos-clave-del-codigo">Conceptos Clave del Código</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">4. Próximos pasos</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modulo-1-core-patterns-di-y-tools">
+<h1>Módulo 1 · Core Patterns: DI y Tools<a class="headerlink" href="#modulo-1-core-patterns-di-y-tools" title="Link to this heading">#</a></h1>
+<p>En el Módulo 0 aprendimos a estructurar la salida del LLM. En este módulo, vamos a darle al agente la capacidad de <strong>actuar</strong> y <strong>consultar</strong> información privada.</p>
+<p>Un agente aislado es poco útil. Para ser “Enterprise”, un agente necesita:</p>
+<ol class="arabic simple">
+<li><p><strong>Contexto:</strong> Saber quién es el usuario (<code class="docutils literal notranslate"><span class="pre">user_id</span></code>), qué permisos tiene, o la fecha actual.</p></li>
+<li><p><strong>Herramientas:</strong> Capacidad para ejecutar funciones Python (consultar SQL, llamar APIs).</p></li>
+<li><p><strong>Testabilidad:</strong> Poder probar esas funciones sin invocar al LLM en cada test.</p></li>
+</ol>
+<p><strong>Stack:</strong> PydanticAI (Context &amp; Tools) | Pytest (Testing)</p>
+<hr class="docutils" />
+<section id="el-concepto-de-runcontext">
+<h2>1. El Concepto de <code class="docutils literal notranslate"><span class="pre">RunContext</span></code><a class="headerlink" href="#el-concepto-de-runcontext" title="Link to this heading">#</a></h2>
+<p>PydanticAI utiliza un sistema de <strong>Inyección de Dependencias (DI)</strong> robusto. A diferencia de pasar variables globales o harcodear conexiones, pasamos un objeto de dependencias (<code class="docutils literal notranslate"><span class="pre">deps</span></code>) en tiempo de ejecución.</p>
+<p>El ciclo de vida es:</p>
+<ol class="arabic simple">
+<li><p>Definir una clase de dependencias (dataclass o Pydantic model).</p></li>
+<li><p>Tipar el Agente con <code class="docutils literal notranslate"><span class="pre">deps_type</span></code>.</p></li>
+<li><p>Inyectar la instancia al llamar a <code class="docutils literal notranslate"><span class="pre">.run(...,</span> <span class="pre">deps=my_deps)</span></code>.</p></li>
+</ol>
+<section id="por-que-hacer-esto">
+<h3>¿Por qué hacer esto?<a class="headerlink" href="#por-que-hacer-esto" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Seguridad:</strong> El agente no tiene acceso a la DB global, solo a la conexión que le pasas.</p></li>
+<li><p><strong>Testing:</strong> Puedes inyectar una “FakeDB” en los tests.</p></li>
+<li><p><strong>Concurrencia:</strong> Puedes ejecutar 100 agentes a la vez, cada uno con un <code class="docutils literal notranslate"><span class="pre">user_id</span></code> diferente, sin cruzar datos.</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tools-dando-manos-al-agente">
+<h2>2. Tools: Dando manos al Agente<a class="headerlink" href="#tools-dando-manos-al-agente" title="Link to this heading">#</a></h2>
+<p>Las herramientas son funciones Python decoradas con <code class="docutils literal notranslate"><span class="pre">&#64;agent.tool</span></code>. El LLM decide cuándo llamarlas basándose en su docstring y firma de tipo.</p>
+<section id="sintaxis-moderna-pydantic-v2">
+<h3>Sintaxis Moderna (Pydantic V2)<a class="headerlink" href="#sintaxis-moderna-pydantic-v2" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunContext</span>
+
+<span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_stock_level</span><span class="p">(</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="n">MyDeps</span><span class="p">],</span>  <span class="c1"># Inyección automática del contexto</span>
+    <span class="n">sku</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Código del producto&quot;</span><span class="p">)]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Obtiene el stock actual de un producto.&quot;&quot;&quot;</span>
+    <span class="c1"># Accedemos a la base de datos a través de las dependencias</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_stock</span><span class="p">(</span><span class="n">sku</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="ejemplo-central-gestor-de-inventario-anti-fraude">
+<h2>3. Ejemplo Central: Gestor de Inventario Anti-Fraude<a class="headerlink" href="#ejemplo-central-gestor-de-inventario-anti-fraude" title="Link to this heading">#</a></h2>
+<p>Vamos a crear un agente para gestión de almacén con un <strong>sistema de seguridad robusto</strong>.</p>
+<p>El desafío: Los LLMs son “demasiado serviciales”. Si un operario tiene un límite de 50 unidades y pide 100, el LLM podría intentar “ayudar” dividiendo el pedido en dos de 50. Para evitar esto, implementaremos <strong>control de sesión acumulativo</strong>.</p>
+<p>Crea el archivo <code class="docutils literal notranslate"><span class="pre">01-core-patterns/inventory_agent.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">devtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">debug</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">RunContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_ai.models.openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIChatModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_ai.providers.openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIProvider</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+
+
+<span class="c1"># --- CONSTANTES ---</span>
+<span class="n">OPERATOR_MAX_QUANTITY</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">LOW_STOCK_THRESHOLD</span> <span class="o">=</span> <span class="mi">10</span>
+
+
+<span class="c1"># --- 1. MODELOS DE DOMINIO ---</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">username</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">role</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;operator&quot;</span><span class="p">,</span> <span class="s2">&quot;manager&quot;</span><span class="p">]</span>
+
+
+<span class="c1"># --- 2. CAPA DE INFRAESTRUCTURA (Simulada) ---</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InventoryService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Servicio que simula un ERP o WMS.&quot;&quot;&quot;</span>
+
+    <span class="n">_stock</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;LAPTOP-X1&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;MOUSE-LOG&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> <span class="s2">&quot;MONITOR-4K&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    
+    <span class="c1"># State tracking: Control acumulativo por sesión para evitar &quot;smurfing&quot; (dividir pedidos)</span>
+    <span class="n">_session_requests</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_stock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sku</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sku</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_session_total</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retorna el total de unidades pedidas por el usuario en esta sesión.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_restock_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sku</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">order_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ORD-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_orders</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">order_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">x </span><span class="si">{</span><span class="n">sku</span><span class="si">}</span><span class="s2"> by </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sku</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stock</span><span class="p">[</span><span class="n">sku</span><span class="p">]</span> <span class="o">+=</span> <span class="n">quantity</span>
+
+        <span class="c1"># Actualizamos el acumulado de la sesión</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session_requests</span><span class="p">[</span><span class="n">user</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">quantity</span>
+
+        <span class="k">return</span> <span class="n">order_id</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resetea el contador de sesión para un usuario (útil para tests).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session_requests</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_stock</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stock</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orders</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+
+<span class="c1"># --- 3. DEPENDENCIAS (Contexto de Ejecución) ---</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WarehouseDeps</span><span class="p">:</span>
+    <span class="n">service</span><span class="p">:</span> <span class="n">InventoryService</span>
+    <span class="n">current_user</span><span class="p">:</span> <span class="n">User</span>
+
+
+<span class="c1"># --- 4. CONFIGURACIÓN DEL AGENTE ---</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">OpenAIChatModel</span><span class="p">(</span>
+    <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+    <span class="n">provider</span><span class="o">=</span><span class="n">OpenAIProvider</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">openai_api_key</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">deps_type</span><span class="o">=</span><span class="n">WarehouseDeps</span><span class="p">,</span>
+    <span class="n">system_prompt</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Eres un asistente de gestión de almacén. &quot;</span>
+        <span class="s2">&quot;Ayuda a los empleados a consultar stock y gestionar reposiciones. &quot;</span>
+        <span class="s2">&quot;Sé eficiente y técnico. Si una operación falla, explica por qué. &quot;</span>
+        <span class="s2">&quot;IMPORTANTE: NO dividas pedidos para evadir límites de autorización. &quot;</span>
+        <span class="s2">&quot;Si el usuario no tiene permisos para una cantidad, rechaza la solicitud completa.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+
+<span class="c1"># --- 5. TOOLS (Herramientas con Lógica de Negocio) ---</span>
+<span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_sku_stock</span><span class="p">(</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="n">WarehouseDeps</span><span class="p">],</span>
+    <span class="n">sku</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;SKU del producto (ej: LAPTOP-X1)&quot;</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Consulta el nivel de stock actual de un producto.&quot;&quot;&quot;</span>
+    <span class="n">qty</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">get_stock</span><span class="p">(</span><span class="n">sku</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">qty</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: El producto &#39;</span><span class="si">{</span><span class="n">sku</span><span class="si">}</span><span class="s2">&#39; no existe en el catálogo.&quot;</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;BAJO&quot;</span> <span class="k">if</span> <span class="n">qty</span> <span class="o">&lt;</span> <span class="n">LOW_STOCK_THRESHOLD</span> <span class="k">else</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Stock: </span><span class="si">{</span><span class="n">qty</span><span class="si">}</span><span class="s2"> unidades (Estado: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+
+<span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">request_restock</span><span class="p">(</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="n">WarehouseDeps</span><span class="p">],</span>
+    <span class="n">sku</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;SKU del producto a reponer&quot;</span><span class="p">)],</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Cantidad a solicitar&quot;</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Genera una orden de reposición de stock.</span>
+<span class="sd">    APLICA REGLAS DE NEGOCIO: Los operadores no pueden pedir &gt; 50 unidades EN TOTAL por sesión.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">current_user</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">service</span>
+
+    <span class="c1"># Verificación Stateful: Comprobamos el historial de la sesión, no solo el pedido actual</span>
+    <span class="n">session_total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">service</span><span class="o">.</span><span class="n">get_session_total</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+    <span class="n">new_total</span> <span class="o">=</span> <span class="n">session_total</span> <span class="o">+</span> <span class="n">quantity</span>
+
+    <span class="c1"># Validación de permisos con tracking de sesión</span>
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="s2">&quot;manager&quot;</span> <span class="ow">and</span> <span class="n">new_total</span> <span class="o">&gt;</span> <span class="n">OPERATOR_MAX_QUANTITY</span><span class="p">:</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">OPERATOR_MAX_QUANTITY</span> <span class="o">-</span> <span class="n">session_total</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;⛔ AUTORIZACIÓN DENEGADA: El usuario &#39;</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; (rol: </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2">) &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;no puede solicitar más de </span><span class="si">{</span><span class="n">OPERATOR_MAX_QUANTITY</span><span class="si">}</span><span class="s2"> unidades en total por sesión. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Ya solicitado: </span><span class="si">{</span><span class="n">session_total</span><span class="si">}</span><span class="s2">. Máximo adicional permitido: </span><span class="si">{</span><span class="n">remaining</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Contacte a un manager para pedidos mayores.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">current_stock</span> <span class="o">=</span> <span class="k">await</span> <span class="n">service</span><span class="o">.</span><span class="n">get_stock</span><span class="p">(</span><span class="n">sku</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">current_stock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: No se puede reponer &#39;</span><span class="si">{</span><span class="n">sku</span><span class="si">}</span><span class="s2">&#39; porque no existe.&quot;</span>
+
+    <span class="n">order_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">service</span><span class="o">.</span><span class="n">create_restock_order</span><span class="p">(</span><span class="n">sku</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;✅ Orden de reposición creada con éxito. ID: </span><span class="si">{</span><span class="n">order_id</span><span class="si">}</span><span class="s2">. Total solicitado en sesión: </span><span class="si">{</span><span class="n">new_total</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="nd">@agent</span><span class="o">.</span><span class="n">tool</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_available_skus</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="n">WarehouseDeps</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lista todos los SKUs disponibles en el catálogo con su stock actual.&quot;&quot;&quot;</span>
+    <span class="n">stock</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">deps</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">get_all_stock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">stock</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;No hay productos en el catálogo.&quot;</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">sku</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">qty</span><span class="si">}</span><span class="s2"> unidades&quot;</span> <span class="k">for</span> <span class="n">sku</span><span class="p">,</span> <span class="n">qty</span> <span class="ow">in</span> <span class="n">stock</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="s2">&quot;SKUs disponibles:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+
+<span class="c1"># --- 6. EJECUCIÓN ---</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">inventory</span> <span class="o">=</span> <span class="n">InventoryService</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- CASO 1: Operador intentando pedido grande (Debería fallar) ---&quot;</span><span class="p">)</span>
+    <span class="n">operator_user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;jdoe&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;operator&quot;</span><span class="p">)</span>
+    <span class="n">deps_op</span> <span class="o">=</span> <span class="n">WarehouseDeps</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="n">inventory</span><span class="p">,</span> <span class="n">current_user</span><span class="o">=</span><span class="n">operator_user</span><span class="p">)</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;Necesito reponer 100 unidades de MOUSE-LOG urgentemente&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario: </span><span class="si">{</span><span class="n">operator_user</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">operator_user</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># El LLM podría intentar hacer 2 llamadas de 50. La lógica de sesión lo detendrá.</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">deps</span><span class="o">=</span><span class="n">deps_op</span><span class="p">)</span>
+        <span class="n">debug</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Resetear sesión para el siguiente caso</span>
+    <span class="n">inventory</span><span class="o">.</span><span class="n">reset_session</span><span class="p">(</span><span class="n">operator_user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- CASO 2: Manager realizando la misma acción (Debería funcionar) ---&quot;</span><span class="p">)</span>
+    <span class="n">manager_user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin_sarah&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;manager&quot;</span><span class="p">)</span>
+    <span class="n">deps_mgr</span> <span class="o">=</span> <span class="n">WarehouseDeps</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="n">inventory</span><span class="p">,</span> <span class="n">current_user</span><span class="o">=</span><span class="n">manager_user</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario: </span><span class="si">{</span><span class="n">manager_user</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">manager_user</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">deps</span><span class="o">=</span><span class="n">deps_mgr</span><span class="p">)</span>
+        <span class="n">debug</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Estado Final del Inventario ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stock MOUSE-LOG: </span><span class="si">{</span><span class="n">inventory</span><span class="o">.</span><span class="n">get_all_stock</span><span class="p">()[</span><span class="s1">&#39;MOUSE-LOG&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Órdenes generadas: </span><span class="si">{</span><span class="n">inventory</span><span class="o">.</span><span class="n">get_orders</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<section id="conceptos-clave-del-codigo">
+<h3>Conceptos Clave del Código<a class="headerlink" href="#conceptos-clave-del-codigo" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Stateful Validation (Validación con Estado):</strong> La validación no mira solo el parámetro <code class="docutils literal notranslate"><span class="pre">quantity</span></code> actual. Consulta <code class="docutils literal notranslate"><span class="pre">get_session_total</span></code>. Esto previene que el LLM o un usuario malicioso divida una operación prohibida en muchas permitidas (técnica conocida como “smurfing”).</p></li>
+<li><p><strong>Prompt Constraints:</strong> La instrucción <em>“IMPORTANTE: NO dividas pedidos…”</em> actúa como primera barrera, pero el código es la barrera definitiva. En seguridad de IA, <strong>nunca confíes solo en el prompt</strong>.</p></li>
+<li><p><strong>Lógica en Tools:</strong> Observa cómo <code class="docutils literal notranslate"><span class="pre">request_restock</span></code> actúa como un “Controlador” de API: verifica permisos, consulta estado, valida existencia y finalmente ejecuta.</p></li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="proximos-pasos">
+<h2>4. Próximos pasos<a class="headerlink" href="#proximos-pasos" title="Link to this heading">#</a></h2>
+<p>Ahora que sabemos inyectar dependencias y crear herramientas con lógica de negocio real, vamos a ver dos casos avanzados:</p>
+<ol class="arabic simple">
+<li><p><strong>Ejemplo 01:</strong> Patrón Service Layer (Desacoplando la lógica).</p></li>
+<li><p><strong>Ejemplo 02:</strong> Testing Unitario de Agentes (Mocking sin coste).</p></li>
+</ol>
+</section>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./01-core-patterns"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../00-introduccion/00_ejemplo_02.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Ejemplo 02: Normalizador de Envíos (Logística)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="01_ejemplo_01.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Ejemplo 01: CRM Agent (Service Layer Pattern)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-concepto-de-runcontext">1. El Concepto de <code class="docutils literal notranslate"><span class="pre">RunContext</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#por-que-hacer-esto">¿Por qué hacer esto?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-dando-manos-al-agente">2. Tools: Dando manos al Agente</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sintaxis-moderna-pydantic-v2">Sintaxis Moderna (Pydantic V2)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ejemplo-central-gestor-de-inventario-anti-fraude">3. Ejemplo Central: Gestor de Inventario Anti-Fraude</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conceptos-clave-del-codigo">Conceptos Clave del Código</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">4. Próximos pasos</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alfons Freixes
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
