@@ -13,3 +13,8 @@ Este repo usa **Dev Containers** (recomendado). Abre con VS Code → “Reopen i
 ```bash
 jupyter-book clean --all .
 jupyter-book build .
+```
+## Visuializar el html
+```bash
+python -m http.server 8000 --directory _build/html
+```

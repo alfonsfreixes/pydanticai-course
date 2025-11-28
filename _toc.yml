@@ -3,15 +3,11 @@ root: index
 chapters:
   - file: 00-introduccion/README
     sections:
-      - file: 00-introduccion/00_proyecto
-      - file: 00-introduccion/00_proyecto_solucion
-  - file: 01-agentes-basicos/README
+      - file: 00-introduccion/00_ejemplo_01
+      - file: 00-introduccion/00_ejemplo_02
+  - file: 01-core-patterns/README
     sections:
-      - file: 01-agentes-basicos/01_proyecto
-  - file: 02-contexto-y-validacion/README
-    sections:
-      - file: 02-contexto-y-validacion/validacion
-  - file: 03-integracion-con-llms/README
-    sections:
-      - file: 03-integracion-con-llms/integracion_llms
-
+      - file: 01-core-patterns/01_ejemplo_01
+      - file: 01-core-patterns/01_ejemplo_02
+  - file: 02-contexto/README
+  - file: 03-avanzado/README
